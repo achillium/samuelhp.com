@@ -7,6 +7,74 @@
 </head>
 
 <body>
+	<div class="astronauts">
+	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro1" />
+	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro2" />
+	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro3" />
+	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro4" />
+	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro5" />
+	  <!-- Add more astronaut img with unique IDs as needed -->
+	</div>
+	<script>
+	const frameCount = 8;
+	const astronautIds = ["astro1", "astro2", "astro3", "astro4", "astro5"]; // Add more as needed
+	// Store random spin settings for each astronaut
+	const spinSettings = astronautIds.map(() => ({
+	  duration: 4 + Math.random() * 6, // 4 to 10 seconds
+	  reverse: Math.random() < 0.5     // Randomly reverse direction
+	}));
+	astronautIds.forEach((id, idx) => {
+		const astro = document.getElementById(id);
+		// Create unique keyframe name per astronaut (or set directly with CSS)
+		const spinName = `spin${idx}`;
+		const direction = spinSettings[idx].reverse ? 'reverse' : 'normal';
+		const style = astro.style;
+		style.animation = `${spinSettings[idx].duration}s linear infinite ${direction} spin`;
+	});
+	const spinTypeStartIndex = [5, 14];
+	const spinTypes = astronautIds.map(() => ({
+	  spin: Math.floor(Math.random()*(1-0+1)),
+	}));
+	const positions = astronautIds.map(() => ({
+		x: Math.random(), // Fractional starting position
+		y: -0.1, // Fractional starting position
+		dx: (Math.random()-0.5) * 0.5, // px/frame
+		dy: (Math.random()-0.5) * 0.5, // px/frame
+	}));
+
+	// Animate movement and frame changes
+	setInterval(() => {
+		astronautIds.forEach((id, idx) => {
+			// Move
+			positions[idx].x += positions[idx].dx * 0.01;
+			positions[idx].y += positions[idx].dy * 0.01;
+			if (positions[idx].x > 1.1){
+				positions[idx].x = -0.1;
+			}
+			if (positions[idx].y > 1.1){
+				positions[idx].y = -0.1;
+			}
+			if (positions[idx].x < -0.1){
+				positions[idx].x = 1.1;
+			}
+			if (positions[idx].y < -0.1){
+				positions[idx].y = 1.1;
+			}
+			console.log(positions[idx].y);
+			const top = positions[idx].y * window.innerHeight;
+			const left = positions[idx].x * window.innerWidth;
+
+			const astro = document.getElementById(id);
+			astro.style.top = `${top}px`;
+			astro.style.left = `${left}px`;
+
+			// Advance frame (simple cycling every few ticks)
+			const frame = Math.floor(((	Date.now()+idx*1000) / 150) % frameCount) + spinTypeStartIndex[spinTypes[idx].spin];
+			astro.src = `./Astronaut3D/tiny/spin${spinTypes[idx].spin}/${frame.toString().padStart(4,'0')}.png`;
+		});
+	}, 30); // Update every 30ms
+	</script>
+
     <div class="">
         <h1>
             SAMUEL HP
@@ -47,7 +115,7 @@
                 </a>
             </div>
         </div>
-        <img src="./samuelhp_files/logo.svg" class="logo">
+        <img src="./Astronaut3D/largeanimation.webp" class="logo">
     </div>
 
 
