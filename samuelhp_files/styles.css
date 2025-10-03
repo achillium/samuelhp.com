@@ -11,24 +11,38 @@ body {
     position: relative;
     overflow: hidden;
     background-image: none;
+	-webkit-user-select: none; /* Chrome, Safari */
+	-moz-user-select: none;    /* Firefox */
+	-ms-user-select: none;     /* IE/Edge */
+	user-select: none;         /* Standard */
 }
+
+img {
+  -webkit-user-drag: none;  /* Chrome, Safari */
+  -khtml-user-drag: none;   /* Older Konqueror */
+  -moz-user-drag: none;     /* Firefox (non-standard) */
+  -o-user-drag: none;       /* Older Opera */
+  user-drag: none;          /* Standard */
+}
+
 
 .logo {
     width: 70%;
+	cursor:pointer;
 }
 
 .astronauts {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  z-index: 1; 
-  pointer-events: none; /* So they can't be clicked */
+	position: fixed;
+	top: 0; left: 0;
+	width: 100vw; height: 100vh;
+	z-index: 1; 
+	pointer-events: none;
 }
 
 .astronaut {
-  position: absolute;
-  width: 7vw; /* Small size */
-  animation: spin 6s linear infinite;
+	position: absolute;
+	width: 7vw; /* Small size */
+	animation: spin 6s linear infinite;
 }
 
 @keyframes spin {
@@ -60,13 +74,19 @@ body::before {
     animation: backgroundScroll 120s linear infinite;
 }
 
-
+h1{
+	cursor:pointer;
+}
 
 a {
     color: #0366d6;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s ease;
+	-webkit-user-select: text; /* Chrome, Safari */
+	-moz-user-select: text;    /* Firefox */
+	-ms-user-select: text;     /* IE/Edge */
+	user-select: text;         /* Standard */
 }
 
 a:hover {
