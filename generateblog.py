@@ -35,7 +35,7 @@ def convert_pages_to_html(source_path="./b_md", out_path="./b"):
         if file.endswith(".md"):
             markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
 
-def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/index.html"):
+def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/"):
     
 
     repos = get_repositories(username, token)
@@ -116,7 +116,7 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
     
     
         <div class="">
-            <a href="index.html" class="h1link">
+            <a href="./" class="h1link">
                 <h1>
                 SAMUEL HP
                 </h1>
