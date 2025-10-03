@@ -4,15 +4,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samuel HP</title>
     <link rel="stylesheet" type="text/css" href="./samuelhp_files/styles.css">
+	
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
 </head>
 
 <body>
 	<div class="astronauts">
-	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro1" />
-	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro2" />
-	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro3" />
-	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro4" />
-	  <img src="./Astronaut3D/tiny/spin0/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro5" />
+	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro1" />
+	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro2" />
+	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro3" />
+	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro4" />
+	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut" id="astro5" />
 	  <!-- Add more astronaut img with unique IDs as needed -->
 	</div>
 	<script>
@@ -37,7 +42,7 @@
 	}));
 	const positions = astronautIds.map(() => ({
 		x: Math.random(), // Fractional starting position
-		y: -0.1, // Fractional starting position
+		y: Math.random(), // Fractional starting position
 		dx: (Math.random()-0.5) * 0.5, // px/frame
 		dy: (Math.random()-0.5) * 0.5, // px/frame
 	}));
@@ -60,7 +65,6 @@
 			if (positions[idx].y < -0.1){
 				positions[idx].y = 1.1;
 			}
-			console.log(positions[idx].y);
 			const top = positions[idx].y * window.innerHeight;
 			const left = positions[idx].x * window.innerWidth;
 
@@ -70,7 +74,7 @@
 
 			// Advance frame (simple cycling every few ticks)
 			const frame = Math.floor(((	Date.now()+idx*1000) / 150) % frameCount) + spinTypeStartIndex[spinTypes[idx].spin];
-			astro.src = `./Astronaut3D/tiny/spin${spinTypes[idx].spin}/${frame.toString().padStart(4,'0')}.png`;
+			astro.src = `./Astronaut3D/tiny/${frame.toString().padStart(4,'0')}.png`;
 		});
 	}, 30); // Update every 30ms
 	</script>
@@ -86,6 +90,9 @@
                 </a> |
                 <a href="https://www.youtube.com/@AstroSamDev" target="_blank">
                     <span>YouTube</span>
+                </a> |
+                <a href="https://www.youtube.com/@AstroSam2" target="_blank">
+                    <span>Second Channel</span>
                 </a> |
                 <a href="https://www.instagram.com/samuelhp0/" target="_blank">
                     <span>Instagram</span>
