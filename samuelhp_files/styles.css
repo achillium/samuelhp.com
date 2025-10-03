@@ -74,6 +74,52 @@ body::before {
     animation: backgroundScroll 120s linear infinite;
 }
 
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.portfolio-item {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  padding: 18px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+.portfolio-item:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+}
+.portfolio-thumb img {
+  width: 220px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.portfolio-title {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.portfolio-desc {
+  color: #555;
+  font-size: 0.97em;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.portfolio-stars {
+  color: #FDB23D;
+  font-size: 1.1em;
+  font-weight: bold;
+  align-self: flex-end;
+}
+
+
 h1{
 	cursor:pointer;
 }
@@ -92,6 +138,15 @@ a {
 a:hover {
     color: #0056b3;
     text-decoration: underline;
+}
+
+.h1link {
+	cursor:pointer;
+	color:black;
+}
+.h1link:hover {
+    color: black;
+    text-decoration: none;
 }
 
 
