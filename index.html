@@ -20,7 +20,7 @@
 
 
     <div class="">
-        <h1>
+        <h1 class="title">
             SAMUEL HP
         </h1>
         <div class="linker">
@@ -41,12 +41,8 @@
                     <span>Linkedin</span>
                 </a>
             </span>
-			<a href="mailto:samuelhparent@gmail.com" target="_blank">
-                <span>BUSINESS:    samuelhparent@gmail.com</span>
-			</a>
-			<a href="mailto:astrosam.contact@gmail.com" target="_blank">
-                <span>CHANNEL:  astrosam.contact@gmail.com</span>
-			</a>
+			<span>BUSINESS:    <b>samuelhparent@gmail.com</b></span>
+			<span>CHANNEL:  <b>astrosam.contact@gmail.com</b></span>
             <div class="pyramid">
                 <span>
                     -- Offertory --
@@ -63,10 +59,21 @@
             </div>
             <div class="pyramid">
                 <span>
-                    -- Things I Do --
+                    -- Made These --
                 </span>
                 <a href="portfolio.html">
                     <h2>PORTFOLIO</h2>
+                </a>
+            </div>
+            <div class="pyramid">
+                <span>
+                    -- Content --
+                </span>
+                <a href="./b/index.html">
+                    <span>BLOG</span>
+                </a>
+                <a href="./data/index.html">
+                    <span>DATA</span>
                 </a>
             </div>
         </div>
@@ -75,7 +82,7 @@
 
 	<script>
 	const frameCount = 8;
-	const astroSize = 64;
+	const astroSize = 0.07 * window.innerWidth;
 
 	const astronautEls = Array.from(document.querySelectorAll(".astronaut"));
 	const positions = [];

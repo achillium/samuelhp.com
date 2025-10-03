@@ -2,42 +2,12 @@ import requests
 import re
 from pathlib import Path
 import sys
+import os
 
-GITHUB_API = "https://api.github.com"
 
-def get_repositories(username, token):
-    repos_url = f"{GITHUB_API}/users/{username}/repos?per_page=100"
-    headers = {}
-    if token != None:
-        headers = {'Authorization': 'Bearer ' + token, 'X-GitHub-Api-Version': '2022-11-28'}
-    repos = {"username":username, "repos":[]}
-    while repos_url:
-        r = requests.get(repos_url, headers=headers)
-        if r.status_code != 200:
-            print(f"Error getting repositories for user: {username}")
-        r.raise_for_status()
-        repos["repos"].extend(r.json())
-        # Pagination
-        repos_url = r.links.get('next', {}).get('url')
-    return repos
-
-def get_readme_image_url(owner, token, repo, branch="main"):
-    """Fetch README raw content and extract first image URL, resolving relative and absolute paths."""
-    readme_url = f"https://api.github.com/repos/{owner}/{repo}/readme"
-    headers = {'Accept': 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28'}
-    if token != None:
-        headers['Authorization'] = 'Bearer ' + token
-    r = requests.get(readme_url, headers=headers)
-    if r.status_code != 200:
-        print(f"Error getting readme for {repo}")
-        print(f"\t >  status code: {r.status_code}")
-        print(f"\t >  text: {r.text}")
-        print(f"\t >  url: {readme_url}")
-        print(f"\t >  headers: {headers}")
-        return None
-    content = r.text
-    # find an image that is manually set for use in portfolio with class="portfolio"
-    match = re.search(r'class\s*=\s*"portfolio"\s*src\s*=\s*"(.+?)"', content)
+def get_readme_image_url(content):
+    # find an image that is manually set for use in blog with class="blog"
+    match = re.search(r'class\s*=\s*"blog"\s*src\s*=\s*"(.+?)"', content)
     # If not found, look for images using markdown
     if not match:
         match = re.search(r'!\[.*?\]\((.*?)\)', content)
@@ -52,7 +22,6 @@ def get_readme_image_url(owner, token, repo, branch="main"):
         print(f"Image: {url}")
         return url
     else:
-        # Relative or GitHub repo-rooted path (starting with '/')
         # Normalize path by stripping leading '/'
         url = url.lstrip('/')
         # Construct the raw URL to this file on main branch
@@ -60,16 +29,14 @@ def get_readme_image_url(owner, token, repo, branch="main"):
         print(f"Image: {url}")
         return url
 
+def convert_pages_to_html(source_path="./b_md", out_path="./b"):
+    import markdown
+    for file in os.listdir(source_path):
+        if file.endswith(".md"):
+            markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
 
-def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css", out_path="portfolio.html"):
-    token = None
-    if len(args)>1:
-        token = args[1]
-        print("Using token: " + token)
-    else:
-        print("NO TOKEN PROVIDED")
+def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/index.html"):
     
-    userRepos = []
 
     repos = get_repositories(username, token)
     userRepos.append(repos)
@@ -141,16 +108,19 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
         }}
       </style>
     </head>
-    <body>
+    <body style="overflow:auto; min-height:100vh;">
+    <div>
+    </div>
+    
+    
+    
+    
         <div class="">
-        <div>
             <a href="index.html" class="h1link">
-                <h1 class="title">
+                <h1>
                 SAMUEL HP
                 </h1>
             </a>
-            </div>
-			<br/>
           <div class="portfolio-grid">
             {''.join(items)}
           </div>
@@ -159,7 +129,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
     </html>
     '''
     Path(out_path).write_text(html, encoding="utf-8")
-    print(f"Portfolio generated: {out_path}")
+    print(f"Blog generated: {out_path}")
 
-
-generate_portfolio("sam-astro", sys.argv)
+convert_pages_to_html()
+#generate_portfolio("sam-astro", sys.argv)
