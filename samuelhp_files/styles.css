@@ -193,9 +193,6 @@ svg {
 }
 
 .day {
-  shape-rendering: crispEdges;
-  stroke: #d0d7de;
-  stroke-width: 1px;
 }
 
 .month-label {
