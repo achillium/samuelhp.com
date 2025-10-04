@@ -11,64 +11,74 @@
       display: flex;
       justify-content: center;
       margin-top: 40px;
-      background: #0d1117;
-      color: #c9d1d9;
+      background: #ffffff;
+      color: #24292f;
     }
+
+    svg {
+      overflow: visible;
+    }
+
     .day {
       shape-rendering: crispEdges;
+      stroke: #d0d7de;
+      stroke-width: 1px;
     }
+
     .month-label {
-      fill: #8b949e;
+      fill: #57606a;
       font-size: 10px;
     }
+
     .tooltip {
       position: absolute;
       padding: 6px 10px;
-      background: #161b22;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
+      background: #ffffff;
+      color: #24292f;
+      border: 1px solid #d0d7de;
       border-radius: 4px;
       font-size: 12px;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.2s;
+      transition: opacity 0.15s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
-  <svg id="heatmap" width="900" height="130"></svg>
+  <svg id="heatmap" width="950" height="150"></svg>
   <div class="tooltip" id="tooltip"></div>
 
   <script>
-    const width = 900;
-    const cellSize = 12; // size of each square
+    const width = 950;
+    const cellSize = 12;
+    const padding = 4;
     const yearDays = 365;
+
     const today = new Date();
-    const startDate = d3.timeDay.offset(today, -yearDays + 1);
+    // Make sure we end at today, not tomorrow
+    const endDate = d3.timeDay.floor(today);
+    const startDate = d3.timeDay.offset(endDate, -yearDays + 1);
 
     const svg = d3.select("#heatmap");
     const tooltip = d3.select("#tooltip");
 
-    d3.csv("./pomodoro/history.csv").then(data => {
-      // Parse and count occurrences per End Date
+    d3.csv("data.csv").then(data => {
+      // Count entries per End Date
       const counts = d3.rollup(
         data,
         v => v.length,
         d => d["End Date"]
       );
 
-      const colorScale = d3.scaleSequential()
-        .domain([0, d3.max(counts.values()) || 1])
-        .interpolator(d3.interpolateGreens);
+      const colorScale = d3.scaleThreshold()
+        .domain([1, 2, 3, 5, 10])
+        .range(["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]);
 
-      const days = d3.timeDays(startDate, d3.timeDay.offset(today, 1));
-
-      svg
-        .attr("width", width)
-        .attr("height", cellSize * 9);
+      const days = d3.timeDays(startDate, d3.timeDay.offset(endDate, 1));
 
       const g = svg.append("g")
-        .attr("transform", "translate(20,20)");
+        .attr("transform", `translate(25, 20)`);
 
       g.selectAll(".day")
         .data(days)
@@ -76,20 +86,20 @@
         .attr("class", "day")
         .attr("width", cellSize)
         .attr("height", cellSize)
-        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + 2))
-        .attr("y", d => d.getDay() * (cellSize + 2))
+        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
+        .attr("y", d => d.getDay() * (cellSize + padding))
         .attr("rx", 2).attr("ry", 2)
         .attr("fill", d => {
           const dateStr = d.toISOString().slice(0, 10);
           const count = counts.get(dateStr) || 0;
-          return count > 0 ? colorScale(count) : "#161b22";
+          return colorScale(count);
         })
         .on("mouseover", function (event, d) {
           const dateStr = d.toISOString().slice(0, 10);
           const count = counts.get(dateStr) || 0;
           tooltip
             .style("opacity", 1)
-            .html(`${count} entries<br>${dateStr}`)
+            .html(`${count} entr${count === 1 ? "y" : "ies"}<br>${dateStr}`)
             .style("left", event.pageX + 10 + "px")
             .style("top", event.pageY - 20 + "px");
         })
@@ -97,10 +107,10 @@
 
       // Month labels
       g.selectAll(".month-label")
-        .data(d3.timeMonths(startDate, today))
+        .data(d3.timeMonths(startDate, endDate))
         .join("text")
         .attr("class", "month-label")
-        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + 2))
+        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
         .attr("y", -5)
         .text(d3.timeFormat("%b"));
     });
