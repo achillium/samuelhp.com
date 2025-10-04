@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar Heatmap</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+      background: #0d1117;
+      color: #c9d1d9;
+    }
+    .day {
+      shape-rendering: crispEdges;
+    }
+    .month-label {
+      fill: #8b949e;
+      font-size: 10px;
+    }
+    .tooltip {
+      position: absolute;
+      padding: 6px 10px;
+      background: #161b22;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <svg id="heatmap" width="900" height="130"></svg>
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const width = 900;
+    const cellSize = 12; // size of each square
+    const yearDays = 365;
+    const today = new Date();
+    const startDate = d3.timeDay.offset(today, -yearDays + 1);
+
+    const svg = d3.select("#heatmap");
+    const tooltip = d3.select("#tooltip");
+
+    d3.csv("./pomodoro/history.csv").then(data => {
+      // Parse and count occurrences per End Date
+      const counts = d3.rollup(
+        data,
+        v => v.length,
+        d => d["End Date"]
+      );
+
+      const colorScale = d3.scaleSequential()
+        .domain([0, d3.max(counts.values()) || 1])
+        .interpolator(d3.interpolateGreens);
+
+      const days = d3.timeDays(startDate, d3.timeDay.offset(today, 1));
+
+      svg
+        .attr("width", width)
+        .attr("height", cellSize * 9);
+
+      const g = svg.append("g")
+        .attr("transform", "translate(20,20)");
+
+      g.selectAll(".day")
+        .data(days)
+        .join("rect")
+        .attr("class", "day")
+        .attr("width", cellSize)
+        .attr("height", cellSize)
+        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + 2))
+        .attr("y", d => d.getDay() * (cellSize + 2))
+        .attr("rx", 2).attr("ry", 2)
+        .attr("fill", d => {
+          const dateStr = d.toISOString().slice(0, 10);
+          const count = counts.get(dateStr) || 0;
+          return count > 0 ? colorScale(count) : "#161b22";
+        })
+        .on("mouseover", function (event, d) {
+          const dateStr = d.toISOString().slice(0, 10);
+          const count = counts.get(dateStr) || 0;
+          tooltip
+            .style("opacity", 1)
+            .html(`${count} entries<br>${dateStr}`)
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 20 + "px");
+        })
+        .on("mouseout", () => tooltip.style("opacity", 0));
+
+      // Month labels
+      g.selectAll(".month-label")
+        .data(d3.timeMonths(startDate, today))
+        .join("text")
+        .attr("class", "month-label")
+        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + 2))
+        .attr("y", -5)
+        .text(d3.timeFormat("%b"));
+    });
+  </script>
+</body>
+</html>
