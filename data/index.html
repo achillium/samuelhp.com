@@ -35,7 +35,8 @@
 			<br/>
 			<div style="display:flex; align-items: center; justify-content: center;">
 			
-				<h2>Pomodoro's 🍅</h2>
+				<h2>Pomodoros 🍅</h2>
+				<br/>
 				<svg id="heatmap" width="950" height="150"></svg>
 
 				  <script>
@@ -65,45 +66,56 @@
 						.range(["#ebedf0", "#f8caca", "#ee9999", "#c55a5a", "#c21c1c"]);
 						//.range(["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]);
 
-					  const days = d3.timeDays(startDate, d3.timeDay.offset(endDate, 1));
+					   const days = d3.timeDays(startDate, d3.timeDay.offset(endDate, 1));
+      const g = svg.append("g").attr("transform", `translate(35, 20)`);
 
-					  const g = svg.append("g")
-						.attr("transform", `translate(25, 20)`);
+      // --- Day rectangles ---
+      g.selectAll(".day")
+        .data(days)
+        .join("rect")
+        .attr("class", "day")
+        .attr("width", cellSize)
+        .attr("height", cellSize)
+        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
+        .attr("y", d => d.getDay() * (cellSize + padding))
+        .attr("rx", 2).attr("ry", 2)
+        .attr("fill", d => {
+          const dateStr = d.toISOString().slice(0, 10);
+          const count = counts.get(dateStr) || 0;
+          return colorScale(count);
+        })
+        .on("mousemove", function (event, d) {
+          const dateStr = d.toISOString().slice(0, 10);
+          const count = counts.get(dateStr) || 0;
+          tooltip
+            .style("opacity", 1)
+            .html(`${count} entr${count === 1 ? "y" : "ies"}<br>${dateStr}`)
+            .style("left", (event.clientX + 12) + "px")
+            .style("top", (event.clientY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("opacity", 0));
 
-					  g.selectAll(".day")
-						.data(days)
-						.join("rect")
-						.attr("class", "day")
-						.attr("width", cellSize)
-						.attr("height", cellSize)
-						.attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
-						.attr("y", d => d.getDay() * (cellSize + padding))
-						.attr("rx", 2).attr("ry", 2)
-						.attr("fill", d => {
-						  const dateStr = d.toISOString().slice(0, 10);
-						  const count = counts.get(dateStr) || 0;
-						  return colorScale(count);
-						})
-						.on("mouseover", function (event, d) {
-						  const dateStr = d.toISOString().slice(0, 10);
-						  const count = counts.get(dateStr) || 0;
-						  tooltip
-							.style("opacity", 1)
-							.html(`${count} entr${count === 1 ? "y" : "ies"}<br>${dateStr}`)
-							.style("left", event.pageX + 10 + "px")
-							.style("top", event.pageY - 20 + "px");
-						})
-						.on("mouseout", () => tooltip.style("opacity", 0));
+      // --- Month labels ---
+      g.selectAll(".month-label")
+        .data(d3.timeMonths(startDate, endDate))
+        .join("text")
+        .attr("class", "month-label")
+        .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
+        .attr("y", -5)
+        .text(d3.timeFormat("%b"));
 
-					  // Month labels
-					  g.selectAll(".month-label")
-						.data(d3.timeMonths(startDate, endDate))
-						.join("text")
-						.attr("class", "month-label")
-						.attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
-						.attr("y", -5)
-						.text(d3.timeFormat("%b"));
-					});
+      // --- Weekday labels (Mon, Wed, Fri only for clean look) ---
+      const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      svg.append("g")
+        .attr("transform", "translate(25, 26)")
+        .selectAll(".week-label")
+        .data(weekDays)
+        .join("text")
+        .attr("class", "week-label")
+        .attr("x", 0)
+        .attr("y", (d, i) => i * (cellSize + padding) + 9)
+        .text(d => (i % 2 === 0 ? d : "")); // label every other line (Sun, Tue, Thu, Sat)
+    });
 				  </script>
 				
 				<!-- <img src="./pomodoro/pomodoro.svg" class="data"> -->
