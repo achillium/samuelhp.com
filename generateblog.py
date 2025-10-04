@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 import sys
 import os
+import markdown
 
 
 def get_readme_image_url(content):
@@ -22,18 +23,39 @@ def get_readme_image_url(content):
         print(f"Image: {url}")
         return url
     else:
-        # Normalize path by stripping leading '/'
-        url = url.lstrip('/')
-        # Construct the raw URL to this file on main branch
-        url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/" + url
-        print(f"Image: {url}")
         return url
+
+
+def convert_markdown_with_css(markdown_file, css_file, output_file):
+        with open(markdown_file, 'r', encoding='utf-8') as f:
+            markdown_text = f.read()
+
+        html_body = markdown.markdown(markdown_text, extensions=['fenced_code', 'codehilite'])
+
+        # Create the full HTML structure with a link to the CSS file
+        full_html = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <title>Samuel HP's Blog</title>
+            <link rel="stylesheet" type="text/css" href="{css_file}">
+        </head>
+        <body>
+            {html_body}
+        </body>
+        </html>
+        """
+
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(full_html)
 
 def convert_pages_to_html(source_path="./b_md", out_path="./b"):
     import markdown
     for file in os.listdir(source_path):
         if file.endswith(".md"):
-            markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
+            convert_markdown_with_css(os.path.join(source_path, file),"../samuelhp_files/styles.css",os.path.join(out_path, file.replace(".md", ".html")))
+            #markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
 
 def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/"):
     
