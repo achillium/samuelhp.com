@@ -188,11 +188,21 @@ a:hover {
 }
 
 
+#heatmapContainer {
+  display: flex;
+  justify-content: center;
+  background: #ffffff;
+  color: #24292f;
+  padding: 20px;
+}
+
 svg {
   overflow: visible;
 }
 
 .day {
+  stroke: #ffffff;
+  stroke-width: 3px;
 }
 
 .month-label {
@@ -200,8 +210,14 @@ svg {
   font-size: 10px;
 }
 
+.week-label {
+  fill: #57606a;
+  font-size: 9px;
+  text-anchor: end;
+}
+
 .tooltip {
-  position: absolute;
+  position: fixed;
   padding: 6px 10px;
   background: #ffffff;
   color: #24292f;
@@ -211,12 +227,6 @@ svg {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.c{
-  color:#ebedf0;
-  color:#f8caca;
-  color:#ee9999;
-  color:#c55a5a;
-  color:#c21c1c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999;
 }
