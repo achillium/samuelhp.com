@@ -63,7 +63,7 @@
     const svg = d3.select("#heatmap");
     const tooltip = d3.select("#tooltip");
 
-    d3.csv("data.csv").then(data => {
+    d3.csv("./pomodoro/history.csv").then(data => {
       // Count entries per End Date
       const counts = d3.rollup(
         data,
