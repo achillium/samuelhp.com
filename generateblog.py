@@ -71,8 +71,6 @@ def convert_pages_to_html(source_path="./b_md", out_path="./b"):
             #markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
 
 def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/"):
-    
-
     repos = get_repositories(username, token)
     userRepos.append(repos)
 

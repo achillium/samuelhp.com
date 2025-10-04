@@ -192,6 +192,7 @@ a:hover {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   border-radius: 14px;
   width:auto;
+  margin:auto;
   display: flex;
   justify-content: center;
   background: #ffffff;
