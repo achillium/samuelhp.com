@@ -149,8 +149,8 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
                 SAMUEL HP
                 </h1>
             </a>
-            </div>
-			<br/>
+        </div>
+		<br/>
           <div class="portfolio-grid">
             {''.join(items)}
           </div>
