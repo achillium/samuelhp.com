@@ -110,6 +110,72 @@
 				.attr("y", (d, i) => i * (cellSize + padding) + 9)
 				.text(d => (i % 2 === 0 ? d : "")); // label every other line (Sun, Tue, Thu, Sat)
 			});
+
+			const hourSvg = d3.select("#heatmapContainer")
+				  .append("svg")
+				  .attr("id", "hourDistribution")
+				  .attr("width", 980)
+				  .attr("height", 180);
+
+			d3.csv("./pomodoro/history.csv").then(data => {
+			  // Parse hours from "End Date" or "End Time"
+			  const parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
+			  const hourCounts = Array.from({ length: 24 }, () => 0);
+			
+			  data.forEach(d => {
+			    let date = parseDate(d["End Time"]) || parseDate(d["End Date"]);
+			    if (!date) return;
+			    const hour = date.getHours();
+			    hourCounts[hour]++;
+			  });
+			
+			  const maxCount = d3.max(hourCounts);
+			  const xScale = d3.scaleBand()
+			    .domain(d3.range(24))
+			    .range([50, 950])
+			    .padding(0.1);
+			
+			  const yScale = d3.scaleLinear()
+			    .domain([0, maxCount])
+			    .nice()
+			    .range([140, 20]);
+			
+			  const g = hourSvg.append("g");
+			
+			  g.selectAll(".bar")
+			    .data(hourCounts)
+			    .join("rect")
+			    .attr("class", "bar")
+			    .attr("x", (d, i) => xScale(i))
+			    .attr("y", d => yScale(d))
+			    .attr("width", xScale.bandwidth())
+			    .attr("height", d => 140 - yScale(d))
+			    .attr("fill", "green");
+			
+			  // Axes
+			  const xAxis = d3.axisBottom(xScale)
+			    .tickFormat(d => {
+			      const suffix = d < 12 ? "a" : "p";
+			      const hour = d % 12 || 12;
+			      return hour + suffix;
+			    });
+			
+			  const yAxis = d3.axisLeft(yScale).ticks(5);
+			
+			  g.append("g")
+			    .attr("transform", "translate(0,140)")
+			    .call(xAxis);
+			
+			  g.append("g")
+			    .attr("transform", "translate(50,0)")
+			    .call(yAxis);
+			
+			  g.append("text")
+			    .attr("x", 60)
+			    .attr("y", 10)
+			    .attr("font-weight", "bold")
+			    .text("Hourly Distribution");
+			});
 			</script>
 			
         </div>
