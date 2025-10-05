@@ -1,312 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Samuel HP's Data</title>
-  <link rel="stylesheet" type="text/css" href="../samuelhp_files/styles.css">
-  <script src="https://d3js.org/d3.v7.min.js"></script>
 
-  <style>
-    body { font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 18px; }
-    h1.title { margin:0; font-size:20px; }
-    h2 { margin: 8px 0; font-size:16px; }
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Samuel HP's Data</title>
+        <link rel="stylesheet" type="text/css" href="../samuelhp_files/styles.css">
+        
+        <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+        <link rel="manifest" href="../site.webmanifest">
+      <style>
+      </style>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
 
-    /* Containers */
-    #heatmapContainer, #hourContainer {
-      width: 980px;
-      background: #fff;
-      border: 1px solid #e6e6e6;
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-      margin-bottom: 12px;
-    }
+    <body>
+    
+    
+        <div class="">
+	            <div>
+	                <a href="../" class="h1link">
+	                    <h1 class="title">
+	                    SAMUEL HP
+	                    </h1>
+	                </a>
+	            </div>
+			    <br/>
+			<div>
+				<h2 style="white-space: nowrap;">Pomodoros 🍅</h2>
+			</div>
+		</div>
+		
+			<div class="tooltip" id="tooltip"></div>
+			<div id="heatmapContainer">
+				<svg id="heatmap" width="980" height="160"></svg>
+			</div>
 
-    /* Tooltip */
-    .tooltip {
-      position: absolute;
-      pointer-events: none;
-      background: rgba(255,255,255,0.98);
-      border: 1px solid #bbb;
-      padding: 6px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      color: #222;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      opacity: 0;
-      transition: opacity 0.08s ease;
-      z-index: 9999;
-    }
+			<script>
+			const width = 980;
+			const cellSize = 12;
+			const padding = 4;
+			const yearDays = 365;
 
-    /* Hour chart text */
-    #hourChart text { font-size: 11px; fill: #333; }
-    #hourChart .bar:hover { opacity: 0.85; }
+			const today = new Date();
+			const endDate = d3.timeDay.floor(today);
+			const startDate = d3.timeDay.offset(endDate, -yearDays + 2);
 
-    /* Week labels */
-    .week-label { font-size: 11px; fill: #444; }
-  </style>
-</head>
-<body>
-  <div>
-    <a href="../" class="h1link"><h1 class="title">SAMUEL HP</h1></a>
-    <br/>
-    <div><h2 style="white-space: nowrap;">Pomodoros 🍅</h2></div>
-  </div>
+			const svg = d3.select("#heatmap");
+			const tooltip = d3.select("#tooltip");
 
-  <div id="tooltip" class="tooltip"></div>
+			d3.csv("./pomodoro/history.csv").then(data => {
+			  const counts = d3.rollup(data, v => v.length, d => d["End Date"]);
 
-  <!-- heatmap -->
-  <div id="heatmapContainer">
-    <svg id="heatmap" width="980" height="200"></svg>
-  </div>
+			  const colorScale = d3.scaleThreshold()
+				.domain([1, 2, 3, 5, 10])
+								.range(["#ebedf0", "#f8caca", "#ee9999", "#c55a5a", "#c21c1c"]);
+								//.range(["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]);
 
-  <!-- hour distribution in separate box -->
-  <div id="hourContainer">
-    <h3 style="margin:4px 0 8px 0;">Hourly distribution</h3>
-    <svg id="hourChart" width="980" height="150"></svg>
-  </div>
+			  const days = d3.timeDays(startDate, d3.timeDay.offset(endDate, 1));
+			  const g = svg.append("g").attr("transform", `translate(35, 20)`);
 
-<script>
-const WIDTH = 980;
-const cellSize = 12;
-const cellPadding = 4;
-const yearDays = 365;
+			  // --- Day rectangles ---
+			  g.selectAll(".day")
+				.data(days)
+				.join("rect")
+				.attr("class", "day")
+				.attr("width", cellSize)
+				.attr("height", cellSize)
+				.attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
+				.attr("y", d => d.getDay() * (cellSize + padding))
+				.attr("rx", 2).attr("ry", 2)
+				.attr("fill", d => {
+				  const dateStr = d.toISOString().slice(0, 10);
+				  const count = counts.get(dateStr) || 0;
+				  return colorScale(count);
+				})
+				.on("mousemove", function (event, d) {
+				  const dateStr = d.toISOString().slice(0, 10);
+				  const count = counts.get(dateStr) || 0;
+				  tooltip
+					.style("opacity", 1)
+					.html(`${count} entr${count === 1 ? "y" : "ies"}<br>${dateStr}`)
+					.style("left", (event.clientX + 12) + "px")
+					.style("top", (event.clientY - 20) + "px");
+				})
+				.on("mouseout", () => tooltip.style("opacity", 0));
 
-const today = new Date();
-const endDate = d3.timeDay.floor(today);
-const startDate = d3.timeDay.offset(endDate, -yearDays + 2);
+			  // --- Month labels ---
+			  g.selectAll(".month-label")
+				.data(d3.timeMonths(startDate, endDate))
+				.join("text")
+				.attr("class", "month-label")
+				.attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + padding))
+				.attr("y", -5)
+				.text(d3.timeFormat("%b"));
 
-const svg = d3.select("#heatmap");
-const tooltip = d3.select("#tooltip");
-
-d3.csv("./pomodoro/history.csv").then(rawData => {
-  // make keys trimmed, values trimmed
-  const data = rawData.map(r => {
-    const out = {};
-    for (const k in r) out[String(k).trim()] = (r[k] || "").trim();
-    return out;
-  });
-
-  // Helper: try to parse multiple formats
-  function tryParse(s) {
-    if (!s) return null;
-    // ISO parse first
-    const iso = d3.isoParse(s);
-    if (iso) return iso;
-    // common formats
-    const p1 = d3.timeParse("%Y-%m-%d %H:%M:%S");
-    const p2 = d3.timeParse("%Y-%m-%d %H:%M");
-    const p3 = d3.timeParse("%Y-%m-%d");
-    const p4 = d3.timeParse("%m/%d/%Y %H:%M:%S");
-    const p5 = d3.timeParse("%m/%d/%Y %H:%M");
-    if (p1(s)) return p1(s);
-    if (p2(s)) return p2(s);
-    if (p4(s)) return p4(s);
-    if (p5(s)) return p5(s);
-    if (p3(s)) return p3(s);
-    // fallback Date constructor
-    const d = new Date(s);
-    if (!isNaN(d)) return d;
-    return null;
-  }
-
-  // Try to extract a Date object from a row using common field names / combos
-  function extractDate(row) {
-    // 1) preferred: End Date + End Time
-    if (row['End Date'] && row['End Time']) {
-      let time = row['End Time'];
-      // if time is like "13:45" add seconds
-      if (/^\d{1,2}:\d{2}$/.test(time)) time += ":00";
-      // try both "YYYY-MM-DD HH:MM:SS" and ISO combine with T
-      const s1 = `${row['End Date']} ${time}`;
-      const s2 = `${row['End Date']}T${time}`;
-      let d = tryParse(s1) || tryParse(s2);
-      if (d) return d;
-    }
-
-    // 2) If End Date itself contains time or is an ISO datetime
-    if (row['End Date']) {
-      const d = tryParse(row['End Date']);
-      if (d) return d;
-    }
-
-    // 3) Try any field that looks like a datetime string
-    for (const k of Object.keys(row)) {
-      const v = row[k];
-      if (!v) continue;
-      // patterns representing date+time
-      if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v) ||
-          /\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(v) ||
-          /\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}/.test(v)) {
-        const d = tryParse(v);
-        if (d) return d;
-      }
-    }
-
-    // 4) last: find a date-only and time-only field and combine
-    let dateOnly = null, timeOnly = null;
-    for (const k of Object.keys(row)) {
-      const v = row[k];
-      if (!v) continue;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) dateOnly = v;
-      if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(v)) timeOnly = v;
-    }
-    if (dateOnly && timeOnly) {
-      let t = timeOnly;
-      if (/^\d{1,2}:\d{2}$/.test(t)) t += ":00";
-      const d = tryParse(`${dateOnly} ${t}`) || tryParse(`${dateOnly}T${t}`);
-      if (d) return d;
-    }
-
-    return null;
-  }
-
-  // Build aggregated daily counts (Map) and hourly counts (array)
-  const counts = new Map();
-  const hourCounts = Array.from({length:24}, () => 0);
-
-  data.forEach(row => {
-    const dt = extractDate(row);
-    if (dt) {
-      const dateKey = dt.toISOString().slice(0,10); // YYYY-MM-DD
-      counts.set(dateKey, (counts.get(dateKey) || 0) + 1);
-      hourCounts[dt.getHours()] = (hourCounts[dt.getHours()] || 0) + 1;
-    } else {
-      // fallback: if an End Date is a plain YYYY-MM-DD, still count the day
-      if (row['End Date'] && /^\d{4}-\d{2}-\d{2}$/.test(row['End Date'])) {
-        counts.set(row['End Date'], (counts.get(row['End Date']) || 0) + 1);
-      }
-    }
-  });
-
-  // --- Heatmap rendering (days) ---
-  const colorScale = d3.scaleThreshold()
-    .domain([1,2,3,5,10])
-    .range(["#ebedf0", "#f8caca", "#ee9999", "#c55a5a", "#c21c1c"]);
-
-  const days = d3.timeDays(startDate, d3.timeDay.offset(endDate, 1));
-  const g = svg.append("g").attr("transform", `translate(35, 20)`);
-
-  g.selectAll(".day")
-    .data(days)
-    .join("rect")
-    .attr("class", "day")
-    .attr("width", cellSize)
-    .attr("height", cellSize)
-    .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + cellPadding))
-    .attr("y", d => d.getDay() * (cellSize + cellPadding))
-    .attr("rx", 2).attr("ry", 2)
-    .attr("fill", d => {
-      const dateStr = d.toISOString().slice(0,10);
-      const count = counts.get(dateStr) || 0;
-      return colorScale(count);
-    })
-    .on("mousemove", function(event, d) {
-      const dateStr = d.toISOString().slice(0,10);
-      const count = counts.get(dateStr) || 0;
-      tooltip
-        .style("opacity", 1)
-        .html(`${count} entr${count === 1 ? "y" : "ies"}<br>${dateStr}`)
-        .style("left", (event.pageX + 12) + "px")
-        .style("top", (event.pageY - 20) + "px");
-    })
-    .on("mouseout", () => tooltip.style("opacity", 0));
-
-  // month labels
-  g.selectAll(".month-label")
-    .data(d3.timeMonths(startDate, endDate))
-    .join("text")
-    .attr("class", "month-label")
-    .attr("x", d => d3.timeWeek.count(startDate, d) * (cellSize + cellPadding))
-    .attr("y", -6)
-    .text(d3.timeFormat("%b"));
-
-  // weekday labels (showing every other for cleanliness)
-  const weekDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  svg.append("g")
-    .attr("transform", "translate(25, 26)")
-    .selectAll(".week-label")
-    .data(weekDays)
-    .join("text")
-    .attr("class", "week-label")
-    .attr("x", 0)
-    .attr("y", (d,i) => i * (cellSize + cellPadding) + 9)
-    .text((d,i) => (i % 2 === 0 ? d : ""));
-
-  // --- Hourly distribution rendering (bars) ---
-  const hourSvg = d3.select("#hourChart");
-  const hMargin = {top: 8, right: 20, bottom: 28, left: 48};
-  const hW = +hourSvg.attr("width");
-  const hH = +hourSvg.attr("height");
-  const innerW = hW - hMargin.left - hMargin.right;
-  const innerH = hH - hMargin.top - hMargin.bottom;
-
-  const hX = d3.scaleBand()
-    .domain(d3.range(0,24))
-    .range([0, innerW])
-    .padding(0.12);
-
-  const hY = d3.scaleLinear()
-    .domain([0, d3.max(hourCounts) || 1])
-    .nice()
-    .range([innerH, 0]);
-
-  const hg = hourSvg.append("g").attr("transform", `translate(${hMargin.left},${hMargin.top})`);
-
-  hg.selectAll(".bar")
-    .data(hourCounts)
-    .join("rect")
-    .attr("class", "bar")
-    .attr("x", (d,i) => hX(i))
-    .attr("y", d => hY(d))
-    .attr("width", hX.bandwidth())
-    .attr("height", d => innerH - hY(d))
-    .attr("fill", "#2e8b2e")
-    .on("mousemove", function(event, d, i) {
-      const idx = d3.select(this).datum(); // gets bound value
-      // find hour index by calculating mouse index
-      const mouseX = event.offsetX - hMargin.left;
-      const band = Math.floor(mouseX / hX.step());
-      const hourIdx = Math.max(0, Math.min(23, band));
-      tooltip
-        .style("opacity", 1)
-        .html(`${hourCounts[hourIdx]} entr${hourCounts[hourIdx] === 1 ? "y" : "ies"}<br>${(hourIdx % 12 || 12)}${hourIdx < 12 ? "a" : "p"}`)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 28) + "px");
-    })
-    .on("mouseout", () => tooltip.style("opacity", 0));
-
-  // x axis (hours)
-  const xAxis = d3.axisBottom(hX)
-    .tickFormat(d => {
-      const hour = d % 12 || 12;
-      return `${hour}${d < 12 ? "a" : "p"}`;
-    })
-    .tickValues(d3.range(0,24)); // show all hours (small text)
-
-  hg.append("g")
-    .attr("transform", `translate(0, ${innerH})`)
-    .call(xAxis)
-    .selectAll("text")
-    .attr("font-size", 10)
-    .attr("dy", "0.25em");
-
-  // y axis
-  const yAxis = d3.axisLeft(hY).ticks(4).tickFormat(d3.format("d"));
-  hg.append("g").call(yAxis);
-
-  // small note if zero data
-  if ((d3.sum(hourCounts) || 0) === 0) {
-    hg.append("text")
-      .attr("x", innerW/2)
-      .attr("y", innerH/2)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#666")
-      .text("No timestamped rows found (check CSV timestamp fields).");
-  }
-});
-</script>
+			  // --- Weekday labels (Mon, Wed, Fri only for clean look) ---
+			  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+			  svg.append("g")
+				.attr("transform", "translate(25, 26)")
+				.selectAll(".week-label")
+				.data(weekDays)
+				.join("text")
+				.attr("class", "week-label")
+				.attr("x", 0)
+				.attr("y", (d, i) => i * (cellSize + padding) + 9)
+				.text(d => (i % 2 === 0 ? d : "")); // label every other line (Sun, Tue, Thu, Sat)
+			});
+			
+			</script>
+			
+        </div>
 </body>
-</html>
 
+</html>
