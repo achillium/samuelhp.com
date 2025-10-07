@@ -25,6 +25,17 @@ def get_readme_image_url(content):
     else:
         return url
 
+def convert_post_to_string(post):
+    o = ""
+    for line in post.split("\n"):
+        if line.startswith("#"):
+            o+= line.split("#")[-1]
+        elif line.startswith("<"):
+            continue
+        else:
+            o+=line+"\n"
+    return o
+
 
 def convert_markdown_with_css(markdown_file, css_file, output_file):
         with open(markdown_file, 'r', encoding='utf-8') as f:
@@ -44,7 +55,7 @@ def convert_markdown_with_css(markdown_file, css_file, output_file):
         <body>
             <div class="">
 	            <div>
-	                <a href="../" class="h1link">
+	                <a href="./" class="h1link">
 	                    <h1 class="title">
 	                    SAMUEL HP
 	                    </h1>
@@ -55,7 +66,9 @@ def convert_markdown_with_css(markdown_file, css_file, output_file):
 
 
 
-            {html_body}
+            <div class="blog-body">
+                {html_body}
+            </div>
         </body>
         </html>
         """
@@ -71,50 +84,33 @@ def convert_pages_to_html(source_path="./b_md", out_path="./b"):
             #markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
 
 def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/"):
-    repos = get_repositories(username, token)
-    userRepos.append(repos)
-
-    # Manual repos
-    repos = get_repositories("The-Distributed-Computing-Project", token)
-    userRepos.append(repos)
-    repos = get_repositories("Asa-Programming-Language", token)
-    userRepos.append(repos)
-
-    starsOffset = {"vault":50, "LMark":20, "CPP-Key-Logger":-100, "AetherGrid":30, "Asa":200}
-    hiddenRepos = {"TPT-Biological-Mod", "RedditMaker"}
-
-    # Only display repositories I own, not forks
-    allRepos = []
-    for u in userRepos:
-        u["repos"] = [r for r in u["repos"] if (not r.get('fork'))]
-        for r in u["repos"]:
-            r["username"] = u["username"]
-            allRepos.append(r)
-    allRepos.sort(key=lambda r: r.get('stargazers_count', 0) + (starsOffset[r["name"]] if r["name"] in starsOffset else 0), reverse=True)
+    posts = []
+    for file in os.listdir(source_path):
+        if file.endswith(".md"):
+            with open(os.path.join(source_path, file)) as f:
+                posts.append((str(file),f.read()))
 
     items = []
-    for repo in allRepos:
-        username = repo["username"]
-        name = repo['name']
-        desc = repo.get('description', '')
-        stars = repo.get('stargazers_count', 0)
-        html_url = repo['html_url']
-        thumb_url = get_readme_image_url(username, token, name)
+    for filename,post in posts:
+        match = re.search(r'<title>(.+?)<\/title>', post)
+        if not match:
+            name = "Untitled"
+        else:
+            name = match.group(1).strip()
+        thumb_url = get_readme_image_url(post)
         if not thumb_url:
-            thumb_url = "placeholder.jpg"
-        if not desc:
-            continue
-        if name in hiddenRepos:
-            continue
+            thumb_url = "../placeholder.jpg"
+        post_str = convert_post_to_string(post)
         block = f'''
-        <div class="portfolio-item">
-          <a href="{html_url}" target="_blank">
-            <div class="portfolio-thumb">
+        <div class="blog-item">
+          <a href="{filename.replace(".md", ".html")}" class="blog-container">
+            <div class="blog-thumb">
               <img src="{thumb_url}" alt="{name} thumbnail"/>
             </div>
-            <div class="portfolio-title">{name}</div>
-            <div class="portfolio-desc">{desc if desc else '<i>No description</i>'}</div>
-            <div class="portfolio-stars">★ {stars}</div>
+            <div class="blog-synopsis">
+                <div class="blog-title">{name}</div>
+                <div class="blog-description">{post_str}</div>
+            </div>
           </a>
         </div>
         '''
@@ -126,13 +122,13 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Samuel HP's Portfolio</title>
-        <link rel="stylesheet" type="text/css" href="./samuelhp_files/styles.css">
+        <title>Samuel HP's Blog</title>
+        <link rel="stylesheet" type="text/css" href="../samuelhp_files/styles.css">
         
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
+        <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+        <link rel="manifest" href="../site.webmanifest">
       <style>
       body {{
           min-height: 100vh;
@@ -149,7 +145,7 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
     
     
         <div class="">
-            <a href="./" class="h1link">
+            <a href="../" class="h1link">
                 <h1>
                 SAMUEL HP
                 </h1>
@@ -161,8 +157,9 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
     </body>
     </html>
     '''
-    Path(out_path).write_text(html, encoding="utf-8")
-    print(f"Blog generated: {out_path}")
+    Path(out_path+"/index.html").write_text(html, encoding="utf-8")
+    print(f"Blog generated: {out_path}/index.html")
 
 convert_pages_to_html()
+generate_blog_home()
 #generate_portfolio("sam-astro", sys.argv)
