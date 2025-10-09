@@ -138,6 +138,12 @@ body::before {
   align-self: flex-end;
 }
 
+.blog-grid {
+  display: grid;
+  //grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top:64px;
+}
 .blog-item {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   border-radius: 14px;
@@ -149,6 +155,9 @@ body::before {
   justify-content:left;
   text-align:left;
   transition: box-shadow 0.2s;
+  max-height:10vw;
+  overflow:hidden;
+  text-overflow: ellipsis;
 }
 .blog-title {
   font-weight: bold;
@@ -158,16 +167,19 @@ body::before {
   color:black;
 }
 .blog-description {
-  margin-bottom: 6px;
   text-align: left;
   color:black;
+  //overflow:hidden;
+  //text-overflow: ellipsis;
+  //max-height:10vw;
 }
 .blog-item:hover {
   box-shadow: 0 4px 20px rgba(0,0,0,0.18);
 }
 .blog-thumb img {
-  width: 50%;
+  width: 10vw;
   border-radius: 8px;
+  margin-right:20px;
 }
 .blog-body {
     text-align: left;

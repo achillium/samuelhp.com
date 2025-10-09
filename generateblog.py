@@ -80,8 +80,10 @@ def convert_pages_to_html(source_path="./b_md", out_path="./b"):
     import markdown
     for file in os.listdir(source_path):
         if file.endswith(".md"):
+            print(f"Converting {file} to HTML...")
             convert_markdown_with_css(os.path.join(source_path, file),"../samuelhp_files/styles.css",os.path.join(out_path, file.replace(".md", ".html")))
             #markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(".md", ".html")))
+    print(f"DONE!\n")
 
 def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/"):
     posts = []
@@ -92,14 +94,17 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
 
     items = []
     for filename,post in posts:
+        print(f"Adding {filename} to home...")
         match = re.search(r'<title>(.+?)<\/title>', post)
         if not match:
             name = "Untitled"
+            print(f"\t ! No title found for {filename}")
         else:
             name = match.group(1).strip()
         thumb_url = get_readme_image_url(post)
         if not thumb_url:
             thumb_url = "../placeholder.jpg"
+            print(f"\t ! No thumbnail found for {filename}")
         post_str = convert_post_to_string(post)
         block = f'''
         <div class="blog-item">
@@ -150,15 +155,16 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
                 SAMUEL HP
                 </h1>
             </a>
-          <div class="portfolio-grid">
+          <div class="blog-grid">
             {''.join(items)}
           </div>
         </div>
     </body>
     </html>
     '''
+    print(f"DONE!\n")
     Path(out_path+"/index.html").write_text(html, encoding="utf-8")
-    print(f"Blog generated: {out_path}/index.html")
+    print(f"Blog generated: {out_path}/index.html\n")
 
 convert_pages_to_html()
 generate_blog_home()
