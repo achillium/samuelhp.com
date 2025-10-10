@@ -23,9 +23,189 @@
             <div class="blog-body">
                 <p><title>First Post</title></p>
 <h1>This is a test of markdown conversion to html</h1>
+<hr />
 <p>lets see if this works</p>
 <p><img src="../images/profile.png"></p>
-<div class="codehilite"><pre><span></span><code>Hello, World!
+<div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(){</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Is this working???</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<blockquote>
+<p>This is currently the code used for generating blog items:</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">markdown</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_readme_image_url</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+    <span class="c1"># find an image that is manually set for use in blog with class=&quot;blog&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;class\s*=\s*&quot;blog&quot;\s*src\s*=\s*&quot;(.+?)&quot;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="c1"># If not found, look for images using markdown</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;!\[.*?\]\((.*?)\)&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="c1"># If not found, look for images using img tags</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;src\s*=\s*&quot;(.+?)&quot;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
+        <span class="c1"># Absolute URL, use as-is</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">url</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">url</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_post_to_string</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">post</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="n">o</span><span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">o</span><span class="o">+=</span><span class="n">line</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">o</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_markdown_with_css</span><span class="p">(</span><span class="n">markdown_file</span><span class="p">,</span> <span class="n">css_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">markdown_text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">html_body</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">markdown_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fenced_code&#39;</span><span class="p">,</span> <span class="s1">&#39;codehilite&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Create the full HTML structure with a link to the CSS file</span>
+        <span class="n">full_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;!DOCTYPE html&gt;</span>
+<span class="s2">        &lt;html lang=&quot;en&quot;&gt;</span>
+<span class="s2">        &lt;head&gt;</span>
+<span class="s2">            &lt;meta charset=&quot;utf-8&quot;&gt;</span>
+<span class="s2">            &lt;title&gt;Samuel HP&#39;s Blog&lt;/title&gt;</span>
+<span class="s2">            &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;</span><span class="si">{</span><span class="n">css_file</span><span class="si">}</span><span class="s2">&quot;&gt;</span>
+<span class="s2">        &lt;/head&gt;</span>
+<span class="s2">        &lt;body&gt;</span>
+<span class="s2">            &lt;div class=&quot;&quot;&gt;</span>
+<span class="s2">                &lt;div&gt;</span>
+<span class="s2">                    &lt;a href=&quot;./&quot; class=&quot;h1link&quot;&gt;</span>
+<span class="s2">                        &lt;h1 class=&quot;title&quot;&gt;</span>
+<span class="s2">                        SAMUEL HP</span>
+<span class="s2">                        &lt;/h1&gt;</span>
+<span class="s2">                    &lt;/a&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &lt;br/&gt;</span>
+<span class="s2">            &lt;/div&gt;</span>
+
+
+
+<span class="s2">            &lt;div class=&quot;blog-body&quot;&gt;</span>
+<span class="s2">                </span><span class="si">{</span><span class="n">html_body</span><span class="si">}</span>
+<span class="s2">            &lt;/div&gt;</span>
+<span class="s2">        &lt;/body&gt;</span>
+<span class="s2">        &lt;/html&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">full_html</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_pages_to_html</span><span class="p">(</span><span class="n">source_path</span><span class="o">=</span><span class="s2">&quot;./b_md&quot;</span><span class="p">,</span> <span class="n">out_path</span><span class="o">=</span><span class="s2">&quot;./b&quot;</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">markdown</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.md&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> to HTML...&quot;</span><span class="p">)</span>
+            <span class="n">convert_markdown_with_css</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source_path</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span><span class="s2">&quot;../samuelhp_files/styles.css&quot;</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.md&quot;</span><span class="p">,</span> <span class="s2">&quot;.html&quot;</span><span class="p">)))</span>
+            <span class="c1">#markdown.markdownFromFile(input=os.path.join(source_path, file), output=os.path.join(out_path, file.replace(&quot;.md&quot;, &quot;.html&quot;)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DONE!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_blog_home</span><span class="p">(</span><span class="n">style_path</span><span class="o">=</span><span class="s2">&quot;./samuelhp_files/styles.css&quot;</span><span class="p">,</span> <span class="n">source_path</span><span class="o">=</span><span class="s2">&quot;./b_md&quot;</span><span class="p">,</span> <span class="n">out_path</span><span class="o">=</span><span class="s2">&quot;./b/&quot;</span><span class="p">):</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.md&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source_path</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">posts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">),</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">filename</span><span class="p">,</span><span class="n">post</span> <span class="ow">in</span> <span class="n">posts</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> to home...&quot;</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;title&gt;(.+?)&lt;\/title&gt;&#39;</span><span class="p">,</span> <span class="n">post</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Untitled&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> ! No title found for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">thumb_url</span> <span class="o">=</span> <span class="n">get_readme_image_url</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">thumb_url</span><span class="p">:</span>
+            <span class="n">thumb_url</span> <span class="o">=</span> <span class="s2">&quot;../placeholder.jpg&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> ! No thumbnail found for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">post_str</span> <span class="o">=</span> <span class="n">convert_post_to_string</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        &lt;div class=&quot;blog-item&quot;&gt;</span>
+<span class="s1">          &lt;a href=&quot;</span><span class="si">{</span><span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.md&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.html&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; class=&quot;blog-container&quot;&gt;</span>
+<span class="s1">            &lt;div class=&quot;blog-thumb&quot;&gt;</span>
+<span class="s1">              &lt;img src=&quot;</span><span class="si">{</span><span class="n">thumb_url</span><span class="si">}</span><span class="s1">&quot; alt=&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> thumbnail&quot;/&gt;</span>
+<span class="s1">            &lt;/div&gt;</span>
+<span class="s1">            &lt;div class=&quot;blog-synopsis&quot;&gt;</span>
+<span class="s1">                &lt;div class=&quot;blog-title&quot;&gt;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&lt;/div&gt;</span>
+<span class="s1">                &lt;div class=&quot;blog-description&quot;&gt;</span><span class="si">{</span><span class="n">post_str</span><span class="si">}</span><span class="s1">&lt;/div&gt;</span>
+<span class="s1">            &lt;/div&gt;</span>
+<span class="s1">          &lt;/a&gt;</span>
+<span class="s1">        &lt;/div&gt;</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    &lt;!DOCTYPE html&gt;</span>
+<span class="s1">    &lt;html lang=&quot;en&quot;&gt;</span>
+<span class="s1">    &lt;head&gt;</span>
+<span class="s1">        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;</span>
+
+<span class="s1">        &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span>
+<span class="s1">        &lt;title&gt;Samuel HP&#39;s Blog&lt;/title&gt;</span>
+<span class="s1">        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../samuelhp_files/styles.css&quot;&gt;</span>
+
+<span class="s1">        &lt;link rel=&quot;apple-touch-icon&quot; sizes=&quot;180x180&quot; href=&quot;../apple-touch-icon.png&quot;&gt;</span>
+<span class="s1">        &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; sizes=&quot;32x32&quot; href=&quot;../favicon-32x32.png&quot;&gt;</span>
+<span class="s1">        &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; sizes=&quot;16x16&quot; href=&quot;../favicon-16x16.png&quot;&gt;</span>
+<span class="s1">        &lt;link rel=&quot;manifest&quot; href=&quot;../site.webmanifest&quot;&gt;</span>
+<span class="s1">      &lt;style&gt;</span>
+<span class="s1">      body </span><span class="se">{{</span>
+<span class="s1">          min-height: 100vh;</span>
+<span class="s1">          overflow: auto;</span>
+<span class="s1">          margin-bottom:40px;</span>
+<span class="s1">        </span><span class="se">}}</span>
+<span class="s1">      &lt;/style&gt;</span>
+<span class="s1">    &lt;/head&gt;</span>
+<span class="s1">    &lt;body style=&quot;overflow:auto; min-height:100vh;&quot;&gt;</span>
+<span class="s1">    &lt;div&gt;</span>
+<span class="s1">    &lt;/div&gt;</span>
+
+
+
+
+<span class="s1">        &lt;div class=&quot;&quot;&gt;</span>
+<span class="s1">            &lt;a href=&quot;../&quot; class=&quot;h1link&quot;&gt;</span>
+<span class="s1">                &lt;h1&gt;</span>
+<span class="s1">                SAMUEL HP</span>
+<span class="s1">                &lt;/h1&gt;</span>
+<span class="s1">            &lt;/a&gt;</span>
+<span class="s1">          &lt;div class=&quot;blog-grid&quot;&gt;</span>
+<span class="s1">            </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="si">}</span>
+<span class="s1">          &lt;/div&gt;</span>
+<span class="s1">        &lt;/div&gt;</span>
+<span class="s1">    &lt;/body&gt;</span>
+<span class="s1">    &lt;/html&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DONE!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">Path</span><span class="p">(</span><span class="n">out_path</span><span class="o">+</span><span class="s2">&quot;/index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blog generated: </span><span class="si">{</span><span class="n">out_path</span><span class="si">}</span><span class="s2">/index.html</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">convert_pages_to_html</span><span class="p">()</span>
+<span class="n">generate_blog_home</span><span class="p">()</span>
+<span class="c1">#generate_portfolio(&quot;sam-astro&quot;, sys.argv)</span>
 </code></pre></div>
             </div>
         </body>
