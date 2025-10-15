@@ -132,7 +132,7 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
             </div>
             <div class="blog-synopsis">
                 <div class="blog-title">{name}</div>
-                <div class="blog-description">{post_str}</div>
+                <div class="blog-description">{post_str[:256]}</div>
             </div>
           </a>
         </div>
