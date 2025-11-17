@@ -1,5 +1,5 @@
 body {
-    font-family: Futura, "Liberation Mono", "Courier New", monospace;
+    font-family: "Jost-Medium", "Jost-Regular", monospace;
     max-width: 1000px;
     margin: 0 auto;
     line-height: 1.4;
@@ -15,6 +15,16 @@ body {
 	-ms-user-select: none;     /* IE/Edge */
 	user-select: none;         /* Standard */
 }
+
+@font-face {
+    font-family: 'Jost-Regular';
+    src: url('fonts/Jost-Regular.ttf')  format('truetype');
+}
+@font-face {
+    font-family: 'Jost-Medium';
+    src: url('fonts/Jost-Medium.ttf')  format('truetype');
+}
+
 
 img {
   object-fit: contain;
