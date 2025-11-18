@@ -123,6 +123,15 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
     <!DOCTYPE html>
     <html lang="en">
     <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XZ1MVQZY32"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){{dataLayer.push(arguments);}}
+          gtag('js', new Date());
+          gtag('config', 'G-XZ1MVQZY32');
+        </script>
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
