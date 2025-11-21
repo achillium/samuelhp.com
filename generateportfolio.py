@@ -101,7 +101,13 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
         html_url = repo['html_url']
         thumb_url = get_readme_image_url(username, token, name)
         if not thumb_url:
-            thumb_url = "placeholder.jpg"
+            thumbnail_image = ""
+        else:
+            thumbnail_image = f'''
+                <div class="portfolio-thumb">
+                  <img src="{thumb_url}" alt="{name} thumbnail"/>
+                </div>
+            '''
         if not desc:
             continue
         if name in hiddenRepos:
@@ -109,9 +115,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
         block = f'''
         <div class="portfolio-item">
           <a href="{html_url}" target="_blank">
-            <div class="portfolio-thumb">
-              <img src="{thumb_url}" alt="{name} thumbnail"/>
-            </div>
+            {thumbnail_image}
             <div class="portfolio-title">{name}</div>
             <div class="portfolio-desc">{desc if desc else '<i>No description</i>'}</div>
             <div class="portfolio-stars">★ {stars}</div>
