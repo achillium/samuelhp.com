@@ -34,6 +34,7 @@ body.no-scroll {
 img {
   object-fit: contain;
   border-radius: 8px;
+  max-width: 100%;
   -webkit-user-drag: none;  /* Chrome, Safari */
   -khtml-user-drag: none;   /* Older Konqueror */
   -moz-user-drag: none;     /* Firefox (non-standard) */
