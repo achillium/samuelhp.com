@@ -213,6 +213,7 @@ body::before {
   	border-radius: 14px;
   	padding: 18px;
   	background: #fff;
+  	color: #000000;
 	-webkit-user-select: text; /* Chrome, Safari */
 	-moz-user-select: text;    /* Firefox */
 	-ms-user-select: text;     /* IE/Edge */
