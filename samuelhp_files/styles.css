@@ -11,11 +11,14 @@ body {
     min-height: 100vh;
     position: relative;
     background-image: none;
-    overflow: hidden;
 	-webkit-user-select: none; /* Chrome, Safari */
 	-moz-user-select: none;    /* Firefox */
 	-ms-user-select: none;     /* IE/Edge */
 	user-select: none;         /* Standard */
+}
+
+body.no-scroll {
+    overflow: hidden;
 }
 
 @font-face {
