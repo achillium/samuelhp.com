@@ -22,15 +22,220 @@
 
             <div class="blog-body">
                 <p><title>Asa Introduction</title></p>
-<h1>Introduction to the Asa programming language</h1>
-<hr />
-<p><img src="https://raw.githubusercontent.com/Asa-Programming-Language/Asa/refs/heads/dev/media/ASA-Full-light.png"></p>
-<hr />
-<div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(){</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">    </span><span class="c1">// Is this working???</span>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is page is very much still a work in progress</p>
+</div>
+<h1 id="introduction-to-the-asa-programming-language">Introduction to the Asa programming language</h1>
+<hr class="hr-heavy">
+
+<p><img src="https://raw.githubusercontent.com/Asa-Programming-Language/Asa/refs/heads/dev/media/ASA-Full-light.png" width="50%"></p>
+<hr class="hr-medium">
+
+<h2 id="so-you-want-to-use-asa">So, you want to use Asa?</h2>
+<p>Asa is a systems programming language built to be used similarly to C++, but be a good replacement. It aims to improve upon many of the shortcomings of that aging language, without sacrificing performance.</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">main</span> <span class="o">::</span> <span class="p">(){</span>
+    <span class="nf">printl</span><span class="p">(</span><span class="s">&quot;Hello World!&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
+
+<hr class="hr-medium">
+
+<h2 id="the-compile-time-define-operator">The Compile Time Define Operator:</h2>
+<p>One of the operators you will be using most often in Asa is the compile time define. This is defined as the double colon, <code class="highlight"><span class="o">::</span></code>.<br />
+It shares many of the characteristics of the set operator (<code>=</code>), and sometimes their functionality even overlaps. It can also be compared to the <code class="highlight"><span class="cp">#define</span></code> preprocessor keyword from C or C++, although Asa does not have a preprocessor.</p>
+<p>Compile time define is used to assign an expression to a name. The most basic example would be:</p>
+<div class="code-with-inline-note">
+<div class="inline-code-block">
+<div class="codehilite"><pre><span></span><code><span class="n">x</span> <span class="o">::</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div>
+
+</div>
+<div class="inline-note inline-note-note">
+<div class="inline-note-title">Note</div>
+<p>This code will evaluate to the exact same as <code class="highlight"><span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></code></p>
+</div>
+</div>
+<p>Of course, more interesting expressions are better. Let's put a lambda expression on the right side:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">x</span> <span class="o">::</span> <span class="kt">int</span><span class="p">(){</span> <span class="k">return</span> <span class="mi">5</span> <span class="p">}</span>
+</code></pre></div>
+
+<p>Now this is a function.</p>
+<h3 id="other-uses">Other uses:</h3>
+<p><code>::</code> can be used for defining other things as well. Such as structs, modules, and special functions.</p>
+<h4 id="defining-structs">Defining Structs:</h4>
+<p>You can create a struct by writing the name, and defining it as a struct expression:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">someStruct</span> <span class="o">::</span> <span class="kt">struct</span><span class="p">{</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="defining-modules">Defining Modules:</h4>
+<p>You can define a module by writing the name, and defining it as a module expression:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleName</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<hr class="hr-medium">
+
+<h2 id="structs">Structs:</h2>
+<p>You can create a struct by writing the name, and defining it as a struct expression:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">someStruct</span> <span class="o">::</span> <span class="kt">struct</span><span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Then to create an instance:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">y</span> <span class="p">:</span> <span class="kt">someStruct</span> <span class="o">=</span> <span class="nf">someStruct</span><span class="p">();</span>
+</code></pre></div>
+
+<h3 id="struct-members">Struct Members:</h3>
+<p>Member variables and functions are defined as normal. Functions, though, have slightly different behavior.<br />
+For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">someStruct</span> <span class="o">::</span> <span class="kt">struct</span><span class="p">{</span>
+
+    <span class="nv">x</span> <span class="p">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+    <span class="nf">memberFunction</span> <span class="o">::</span> <span class="p">(</span><span class="nv">v</span> <span class="p">:</span> <span class="kt">int</span><span class="p">){</span>
+        <span class="bp">this</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The difference with functions defined inside of a struct is that that they can only be called with the access operator (<code>.</code>), but they can also access members within the struct itself. To do this, you must use the <code class="highlight"><span class="bp">this</span></code> keyword, which references the instance the function is within.<br />
+Then member access is as normal like:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">s</span> <span class="p">:</span> <span class="kt">someStruct</span> <span class="o">=</span> <span class="nf">someStruct</span><span class="p">();</span>
+
+<span class="nf">printl</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">x</span><span class="p">);</span> <span class="c1">// -&gt; 10</span>
+
+<span class="n">s</span><span class="p">.</span><span class="nf">memberFunction</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+<span class="nf">printl</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">x</span><span class="p">);</span> <span class="c1">// -&gt; 3</span>
+</code></pre></div>
+
+<h3 id="struct-specific-functions">Struct specific functions:</h3>
+<p>There are some functions that have specific names and functionality for handling structs.</p>
+<h3 id="create">Create:</h3>
+<div class="codehilite"><pre><span></span><code><span class="kt">create</span> <span class="o">::</span> <span class="nf">someStruct</span><span class="p">(){</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr class="hr-medium">
+
+<h2 id="expressions">Expressions:</h2>
+<p>In Asa, most things you write are "expressions". In other words, the individual components should be able to be evaluated all on their own. For example, take the following function:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">functionName</span> <span class="o">::</span> <span class="p">(){</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Given the above function, we can split it into its sub-expressions:</p>
+<p>The name:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">functionName</span>
+</code></pre></div>
+
+<p>and a lambda:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">(){}</span>
+</code></pre></div>
+
+<p>The lambda is simply an unnamed function. You can create one with parentheses containing the function arguments, followed by curly braces containing the body. Like: <code class="highlight"><span class="p">(</span><span class="nv">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">){}</span></code>.<br />
+If you want the lambda to have a return value, it should be preceded by the type. Like: <code class="highlight"><span class="kt">int</span><span class="p">(</span><span class="nv">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">){</span> <span class="k">return</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="p">}</span></code></p>
+<hr class="hr-medium">
+
+<h2 id="special-function-definitions">Special Function Definitions:</h2>
+<p>Just like in C++, there are some special ways to define functions for certain use cases.</p>
+<h3 id="operator-overloading">Operator Overloading:</h3>
+<p>Operator overloading is used to override builtin behavior or add new behavior to existing or new symbols. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="o">operator@</span> <span class="o">::</span> <span class="kt">int</span><span class="p">(</span><span class="nv">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="nv">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">){</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">printl</span><span class="p">(</span><span class="mi">3</span> <span class="o">@</span> <span class="mi">1</span><span class="p">);</span>
+<span class="c1">// -&gt; Outputs 3</span>
+</code></pre></div>
+
+<p>Defining an operator overload is done with the following syntax:</p>
+<div class="codehilite"><pre><span></span><code>operator&lt;symbol&gt; :: &lt;return type&gt;(&lt;Left value&gt;, &lt;Right value&gt;){
+}
+</code></pre></div>
+
+<p>The <code>&lt;symbol&gt;</code> can be any ASCII special character, and can be a double character as well. Example: <code class="highlight"><span class="err">$</span></code> or <code class="highlight"><span class="err">$$</span></code>. The only symbols you cannot overload are the compiler define <code class="highlight"><span class="o">::</span></code> and a few punctuation symbols. Also, the list of available symbols is predefined, so some combinations may be missing.</p>
+<hr class="hr-medium">
+
+<h2 id="compiler-keywords">Compiler keywords:</h2>
+<p>In Asa, there are a number of keywords for modifying the behavior of the compiler during compilation. These all start with the character <code class="highlight"><span class="err">#</span></code>. Any compiler keyword is an expression that will be evaluated at <strong><em>compile time</em></strong>.</p>
+<hr class="hr-light">
+<h2 id="import"><code class="highlight"><span class="kn">#import</span></code></h2>
+<p>One of the most used keywords, used for importing modules by name. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">#import</span> <span class="nn">Rendering</span><span class="p">:</span><span class="nn">Window</span><span class="p">;</span>
+<span class="kn">#import</span> <span class="nn">Rendering</span><span class="p">:</span><span class="nn">Drawing</span><span class="p">:</span><span class="nn">Line</span><span class="p">;</span>
+</code></pre></div>
+
+<p>This imports the module <code>Window</code> in the directory <code>modules/Rendering</code>. The module expression can be more complex, for example sub-directories: <code class="highlight"><span class="kn">#import</span> <span class="nn">A</span><span class="p">:</span><span class="nn">B</span><span class="p">:</span><span class="nn">C</span><span class="p">:</span><span class="nn">ModuleName</span><span class="p">;</span></code>, which would be in <code>modules/A/B/C</code>. You can also wildcard import modules by using the base path followed by an asterisk: <code class="highlight"><span class="kn">#import</span> <span class="nn">Builtin</span><span class="p">:</span><span class="o">*</span><span class="p">;</span></code>, which would import all modules of all files in the directory <code>modules/Builtin/</code>.<br />
+<code>#import</code> looks in multiple locations for the specified module. First, it looks in the local directory from where it is called. If there is a matching module (including all path components), then it will stop there. If it does not find a matching module locally, it will look in the global modules folder, which is installed next to the <code>asa</code> executable. This allows you to override builtin modules for specific use cases.</p>
+<hr class="hr-light">
+<h2 id="file"><code class="highlight"><span class="kn">#file</span></code></h2>
+<p>This is similar to <code class="highlight"><span class="kn">#import</span></code>, but instead of only including a single module, it loads the entire file. Also, it does so by an explicit path. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">#file</span> <span class="s">&quot;./otherFile.asa&quot;</span><span class="p">;</span>
+</code></pre></div>
+
+<p>This would compile and import the entire other file at the given path. The path is evaluated relative to the file which <code class="highlight"><span class="kn">#file</span></code> is in.</p>
+<hr class="hr-light">
+<h2 id="extern"><code class="highlight"><span class="kn">#extern</span></code></h2>
+<p>This is a method to reference external functions from libraries. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">#extern</span> <span class="nf">printf</span> <span class="o">::</span> <span class="kt">int32</span> <span class="p">(</span><span class="nv">s</span> <span class="p">:</span> <span class="kd">const </span><span class="o">*</span><span class="kt">char</span><span class="p">,</span> <span class="o">...</span><span class="p">);</span>
+</code></pre></div>
+
+<p>The above would allow you to use the <code>printf</code> function from the C standard library. <code class="highlight"><span class="kn">#extern</span></code> use is simply stating the function name and parameters as they are defined, and not including a body.</p>
+<hr class="hr-light">
+<h2 id="inline"><code class="highlight"><span class="kn">#inline</span></code></h2>
+<p>This is a function modifier that tells the compiler it should be in-lined for performance.</p>
+<hr class="hr-light">
+<h2 id="replaceable"><code class="highlight"><span class="kn">#replaceable</span></code></h2>
+<p>This is a function modifier that tells the compiler another function with the same identity can be defined. While function overloading typically requires a different identity, if <code class="highlight"><span class="kn">#replaceable</span></code> is used in the original, it can be overloaded without an error. This will effectively delete the <code class="highlight"><span class="kn">#replaceable</span></code> function and use the newly defined one.</p>
+<hr class="hr-light">
+<h2 id="hideast"><code class="highlight"><span class="kn">#hideast</span></code></h2>
+<p>This is a function modifier that just hides the function from showing in the AST verbose output. This is primarily used for compiler development.</p>
+<hr class="hr-light">
+<h2 id="variant"><code class="highlight"><span class="kn">#variant</span></code></h2>
+<p>This is a function modifier that creates variants of the function. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">foo</span> <span class="o">::</span> <span class="p">()</span>
+    <span class="kn">#variant</span> <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">{</span>
+    <span class="nf">printl</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Then you can use it like so:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">foo</span><span class="o">&lt;</span><span class="n">w</span><span class="o">=</span><span class="mi">7</span><span class="o">&gt;</span><span class="p">();</span> <span class="c1">// -&gt; 7</span>
+<span class="n">foo</span><span class="o">&lt;</span><span class="n">w</span><span class="o">=</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">();</span> <span class="c1">// -&gt; 2</span>
+</code></pre></div>
+
+<p>This looks like arguments with extra steps, but the main difference is that it permanently creates a completely different function for each combination during the compilation process. So the above would have equivalent code to the following (except for the identities being the same, which would throw an error):</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">foo</span> <span class="o">::</span> <span class="p">(){</span>
+    <span class="nf">printl</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nf">foo</span> <span class="o">::</span> <span class="p">(){</span>
+    <span class="nf">printl</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This is useful if you want to allow for a function to work with multiple types:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">foo</span> <span class="o">::</span> <span class="kt">T</span><span class="p">(</span><span class="nv">v</span> <span class="p">:</span> <span class="kt">T</span><span class="p">)</span>
+    <span class="kn">#variant</span> <span class="n">T</span> <span class="o">=</span> <span class="kt">int</span><span class="p">;</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">v</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr class="hr-light">
+<h2 id="new"><code class="highlight"><span class="kn">#new</span></code></h2>
+<p>TODO: <code class="highlight"><span class="kn">#new</span></code> is for manually creating objects from their name, like: <code class="highlight"><span class="kn">#new</span> <span class="n">structName</span></code>. It should be removed and replaced by an automatic <code class="highlight"><span class="kt">create</span></code> function addition.</p>
+<hr class="hr-light">
+<h2 id="cast"><code class="highlight"><span class="kn">#cast</span></code></h2>
+<p>TODO: <code class="highlight"><span class="kn">#cast</span></code> is for manually casting a value to a builtin type, like: <code class="highlight"><span class="kn">#cast</span> <span class="mi">5</span> <span class="err">:</span> <span class="kt">float</span></code>. It should be removed and replaced by an automatic <code class="highlight"><span class="kt">cast</span></code> function addition.</p>
 
                 <br>
 
