@@ -124,6 +124,131 @@ create :: someStruct(){
 
 ----
 
+## Modules:
+
+You can define a module by writing the name, and defining it as a module expression:
+
+```asa
+moduleName :: module{
+
+}
+```
+
+Modules can have sub-modules to any depth:
+
+```asa
+moduleA :: module{
+    moduleB :: module{
+        moduleC :: module{
+        
+        }
+    }
+}
+```
+
+### Accessing:
+
+You can use the access operator `.` to use members of a module.
+
+```asa
+moduleA :: module{
+    moduleB :: module{
+        x = 4;
+    }
+}
+```
+
+Accessing the variable `x` from outside `moduleA` would be done like so:
+
+```asa
+moduleA.moduleB.x = 5;
+```
+
+TODO: I am considering how to implement public/private
+
+One way is by making anything you want to be "private" just be put in a submodule
+```asa
+moduleA :: module{
+    moduleB :: module{
+        x = 4;
+    }
+
+    somePublicFunc :: (){
+        moduleB.x = 100;
+    }
+}
+```
+
+Or, a prefix keyword, which doesnt really fit the style of anything else
+```asa
+moduleA :: module{
+    private x = 4;
+
+    public somePublicFunc :: (){
+        moduleB.x = 100;
+    }
+
+    private somePrivateFunc :: (){
+        moduleB.x = 0;
+    }
+}
+```
+
+Or a modifier, but those only currently exist for functions and seem messy for variables
+```asa
+moduleA :: module{
+    // Both of these feel bad
+    x : int #private = 4;
+    #private y : int = 4;
+
+    somePublicFunc :: () #public; {
+        moduleB.x = 100;
+    }
+
+    somePrivateFunc :: () #private; {
+        moduleB.x = 0;
+    }
+}
+```
+
+Or a type modifier like `const`, but that also reads weird, and makes less sense when there's no specified type
+```asa
+moduleA :: module{
+    x : private int = 4;
+    y : private = 2;
+
+    somePublicFunc :: public () {
+        moduleB.x = 100;
+    }
+
+    somePrivateFunc :: private () {
+        moduleB.x = 0;
+    }
+}
+```
+
+Then there is the C++ way which is very un-C++ like in my opinion and ugly, but is more like "sections", similar to the sub-module idea above
+```asa
+moduleA :: module{
+
+private:
+    x : int = 4;
+    y = 2;
+
+    somePrivateFunc :: private () {
+        moduleB.x = 0;
+    }
+
+public:
+    somePublicFunc :: () {
+        moduleB.x = 100;
+    }
+}
+```
+
+
+----
+
 ## Expressions:
 
 In Asa, most things you write are "expressions". In other words, the individual components should be able to be evaluated all on their own. For example, take the following function:
@@ -200,6 +325,112 @@ This is similar to `:::asa #import`, but instead of only including a single modu
 #file "./otherFile.asa";
 ```
 This would compile and import the entire other file at the given path. The path is evaluated relative to the file which `:::asa #file` is in.
+
+-----
+## `:::asa #linenum`
+Gets the line number as an integer of it's own location in the source code file. For example:
+```asa
+1 // some line
+2 print(#linenum); // Prints 2
+```
+
+-----
+## `:::asa #linecol`
+Gets the line column as an integer of it's own location in the source code file. For example:
+```asa
+print(#linecol); // Prints 6 TODO: Verify this
+```
+
+-----
+## `:::asa #line`
+Gets the line contents as a string at it's own location in the source code file. For example:
+```asa
+print(#line); 
+```
+The above prints `print(#line);`. (Putting this in a comment would be recursive).
+
+-----
+## `:::asa #filename`
+Gets the name of the source code file as a string. For example:
+```asa
+// In a file called main.asa
+print(#filename); 
+```
+The above would print `main.asa`.
+
+-----
+## `:::asa #funcname`
+Gets the name of the function it is in as a string. For example:
+```asa
+someFunc :: int(){
+    print(#funcname); 
+    ...
+}
+```
+The above would print `someFunc`.
+
+-----
+## `:::asa #modulename`
+Gets the name of the immediate module it is in as a string. For example:
+```asa
+moduleA :: module{
+    print(#modulename); 
+}
+```
+The above would print `moduleA`. But in the case of nested modules like so:
+```asa
+moduleA :: module{
+    moduleB :: module{
+        print(#modulename); 
+    }
+}
+```
+The above would print `moduleB`.
+
+-----
+## `:::asa #asaversion`
+Gets the version of the Asa compiler as a string as it was when compiled. For example:
+```asa
+print(#asaversion); 
+```
+The above would print the current version string of the asa compiler.
+
+-----
+## `:::asa #counter`
+Acts as an automatically incrementing integer. For example:
+```asa
+print(#counter); // Prints 0
+print(#counter); // Prints 1
+print(#counter); // Prints 2
+```
+
+-----
+## `:::asa #nameof(I)`
+Gets the name of an identifier as a string. For example:
+```asa
+someVar : int = 0;
+print(#nameof(someVar));
+```
+The above would print the string `someVar`.
+
+-----
+## `:::asa #typeof(T)`
+Gets the type name of an identifier or type as a string. For example:
+```asa
+someVar : int = 0;
+print(#typeof(someVar)); // Would print `int`
+print(#typeof(string));  // Would print `string`
+TODO: I may make #typeof return a type object in the future, and make #typename do this
+```
+
+-----
+## `:::asa #sizeof(T)`
+Gets the size in bytes of an identifier or type as an integer. For example:
+```asa
+someVar : int = 0;
+print(#sizeof(someVar)); // Would print `4`
+print(#sizeof(int8));    // Would print `1`
+```
 
 -----
 ## `:::asa #extern`

@@ -124,6 +124,114 @@ Then member access is as normal like:</p>
 
 <hr class="hr-medium">
 
+<h2 id="modules">Modules:</h2>
+<p>You can define a module by writing the name, and defining it as a module expression:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleName</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Modules can have sub-modules to any depth:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="n">moduleB</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+        <span class="n">moduleC</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="accessing">Accessing:</h3>
+<p>You can use the access operator <code>.</code> to use members of a module.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="n">moduleB</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Accessing the variable <code>x</code> from outside <code>moduleA</code> would be done like so:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span><span class="p">.</span><span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div>
+
+<p>TODO: I am considering how to implement public/private</p>
+<p>One way is by making anything you want to be "private" just be put in a submodule</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="n">moduleB</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">somePublicFunc</span> <span class="o">::</span> <span class="p">(){</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Or, a prefix keyword, which doesnt really fit the style of anything else</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="n">private</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+
+    <span class="n">public</span> <span class="nf">somePublicFunc</span> <span class="o">::</span> <span class="p">(){</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">private</span> <span class="nf">somePrivateFunc</span> <span class="o">::</span> <span class="p">(){</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Or a modifier, but those only currently exist for functions and seem messy for variables</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="c1">// Both of these feel bad</span>
+    <span class="nv">x</span> <span class="p">:</span> <span class="kt">int</span> <span class="kn">#private</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="kn">#private</span> <span class="nv">y</span> <span class="p">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+
+    <span class="nf">somePublicFunc</span> <span class="o">::</span> <span class="p">()</span> <span class="kn">#public</span><span class="p">;</span> <span class="p">{</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">somePrivateFunc</span> <span class="o">::</span> <span class="p">()</span> <span class="kn">#private</span><span class="p">;</span> <span class="p">{</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Or a type modifier like <code>const</code>, but that also reads weird, and makes less sense when there's no specified type</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="nv">x</span> <span class="p">:</span> <span class="kt">private</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="nv">y</span> <span class="p">:</span> <span class="kt">private</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="nf">somePublicFunc</span> <span class="o">::</span> <span class="kt">public</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">somePrivateFunc</span> <span class="o">::</span> <span class="kt">private</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Then there is the C++ way which is very un-C++ like in my opinion and ugly, but is more like "sections", similar to the sub-module idea above</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+
+<span class="nv">private</span><span class="p">:</span>
+    <span class="kt">x</span> <span class="err">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="nf">somePrivateFunc</span> <span class="o">::</span> <span class="kt">private</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="nv">public</span><span class="p">:</span>
+    <span class="kt">somePublicFunc</span> <span class="o">::</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="n">moduleB</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr class="hr-medium">
+
 <h2 id="expressions">Expressions:</h2>
 <p>In Asa, most things you write are "expressions". In other words, the individual components should be able to be evaluated all on their own. For example, take the following function:</p>
 <div class="codehilite"><pre><span></span><code><span class="nf">functionName</span> <span class="o">::</span> <span class="p">(){</span>
@@ -181,6 +289,101 @@ If you want the lambda to have a return value, it should be preceded by the type
 </code></pre></div>
 
 <p>This would compile and import the entire other file at the given path. The path is evaluated relative to the file which <code class="highlight"><span class="kn">#file</span></code> is in.</p>
+<hr class="hr-light">
+<h2 id="linenum"><code class="highlight"><span class="kn">#linenum</span></code></h2>
+<p>Gets the line number as an integer of it's own location in the source code file. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="mi">1</span> <span class="c1">// some line</span>
+<span class="mi">2</span> <span class="nf">print</span><span class="p">(</span><span class="kn">#linenum</span><span class="p">);</span> <span class="c1">// Prints 2</span>
+</code></pre></div>
+
+<hr class="hr-light">
+<h2 id="linecol"><code class="highlight"><span class="kn">#linecol</span></code></h2>
+<p>Gets the line column as an integer of it's own location in the source code file. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">print</span><span class="p">(</span><span class="kn">#linecol</span><span class="p">);</span> <span class="c1">// Prints 6 TODO: Verify this</span>
+</code></pre></div>
+
+<hr class="hr-light">
+<h2 id="line"><code class="highlight"><span class="kn">#line</span></code></h2>
+<p>Gets the line contents as a string at it's own location in the source code file. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">print</span><span class="p">(</span><span class="kn">#line</span><span class="p">);</span> 
+</code></pre></div>
+
+<p>The above prints <code>print(#line);</code>. (Putting this in a comment would be recursive).</p>
+<hr class="hr-light">
+<h2 id="filename"><code class="highlight"><span class="kn">#filename</span></code></h2>
+<p>Gets the name of the source code file as a string. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// In a file called main.asa</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#filename</span><span class="p">);</span> 
+</code></pre></div>
+
+<p>The above would print <code>main.asa</code>.</p>
+<hr class="hr-light">
+<h2 id="funcname"><code class="highlight"><span class="kn">#funcname</span></code></h2>
+<p>Gets the name of the function it is in as a string. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">someFunc</span> <span class="o">::</span> <span class="kt">int</span><span class="p">(){</span>
+    <span class="nf">print</span><span class="p">(</span><span class="kn">#funcname</span><span class="p">);</span> 
+    <span class="o">...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The above would print <code>someFunc</code>.</p>
+<hr class="hr-light">
+<h2 id="modulename"><code class="highlight"><span class="kn">#modulename</span></code></h2>
+<p>Gets the name of the immediate module it is in as a string. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="kn">#modulename</span><span class="p">);</span> 
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The above would print <code>moduleA</code>. But in the case of nested modules like so:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">moduleA</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+    <span class="n">moduleB</span> <span class="o">::</span> <span class="kt">module</span><span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="kn">#modulename</span><span class="p">);</span> 
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The above would print <code>moduleB</code>.</p>
+<hr class="hr-light">
+<h2 id="asaversion"><code class="highlight"><span class="kn">#asaversion</span></code></h2>
+<p>Gets the version of the Asa compiler as a string as it was when compiled. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">print</span><span class="p">(</span><span class="kn">#asaversion</span><span class="p">);</span> 
+</code></pre></div>
+
+<p>The above would print the current version string of the asa compiler.</p>
+<hr class="hr-light">
+<h2 id="counter"><code class="highlight"><span class="kn">#counter</span></code></h2>
+<p>Acts as an automatically incrementing integer. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">print</span><span class="p">(</span><span class="kn">#counter</span><span class="p">);</span> <span class="c1">// Prints 0</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#counter</span><span class="p">);</span> <span class="c1">// Prints 1</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#counter</span><span class="p">);</span> <span class="c1">// Prints 2</span>
+</code></pre></div>
+
+<hr class="hr-light">
+<h2 id="nameofi"><code class="highlight"><span class="kn">#nameof</span><span class="p">(</span><span class="n">I</span><span class="p">)</span></code></h2>
+<p>Gets the name of an identifier as a string. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">someVar</span> <span class="p">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#nameof</span><span class="p">(</span><span class="n">someVar</span><span class="p">));</span>
+</code></pre></div>
+
+<p>The above would print the string <code>someVar</code>.</p>
+<hr class="hr-light">
+<h2 id="typeoft"><code class="highlight"><span class="kn">#typeof</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code></h2>
+<p>Gets the type name of an identifier or type as a string. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">someVar</span> <span class="p">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#typeof</span><span class="p">(</span><span class="n">someVar</span><span class="p">));</span> <span class="c1">// Would print `int`</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#typeof</span><span class="p">(</span><span class="kt">string</span><span class="p">));</span>  <span class="c1">// Would print `string`</span>
+<span class="nv">TODO</span><span class="p">:</span> <span class="kt">I</span> <span class="n">may</span> <span class="n">make</span> <span class="kn">#typeof</span> <span class="k">return</span> <span class="n">a</span> <span class="n">type</span> <span class="n">object</span> <span class="k">in</span> <span class="n">the</span> <span class="n">future</span><span class="p">,</span> <span class="n">and</span> <span class="n">make</span> <span class="kn">#typename</span> <span class="n">do</span> <span class="bp">this</span>
+</code></pre></div>
+
+<hr class="hr-light">
+<h2 id="sizeoft"><code class="highlight"><span class="kn">#sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></code></h2>
+<p>Gets the size in bytes of an identifier or type as an integer. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">someVar</span> <span class="p">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#sizeof</span><span class="p">(</span><span class="n">someVar</span><span class="p">));</span> <span class="c1">// Would print `4`</span>
+<span class="nf">print</span><span class="p">(</span><span class="kn">#sizeof</span><span class="p">(</span><span class="kt">int8</span><span class="p">));</span>    <span class="c1">// Would print `1`</span>
+</code></pre></div>
+
 <hr class="hr-light">
 <h2 id="extern"><code class="highlight"><span class="kn">#extern</span></code></h2>
 <p>This is a method to reference external functions from libraries. For example:</p>
