@@ -113,12 +113,21 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
         if name in hiddenRepos:
             continue
         block = f'''
-        <div class="portfolio-item">
+        <div class="window portfolio-item">
           <a href="{html_url}" target="_blank">
-            {thumbnail_image}
-            <div class="portfolio-title">{name}</div>
-            <div class="portfolio-desc">{desc if desc else '<i>No description</i>'}</div>
-            <div class="portfolio-stars">★ {stars}</div>
+            <div class="title-bar">
+                <div class="title-bar-text">{name}</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                {thumbnail_image}
+                <div>{desc if desc else '<i>No description</i>'}</div>
+                <div class="portfolio-stars">★ {stars}</div>
+            </div>
           </a>
         </div>
         '''
@@ -127,6 +136,9 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
     <!DOCTYPE html>
     <html lang="en">
     <head>
+
+        <link rel="stylesheet" href="https://unpkg.com/98.css" />
+
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XZ1MVQZY32"></script>
         <script>
@@ -158,9 +170,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
         <div class="">
         <div>
             <a href="./" class="h1link">
-                <h1 class="title">
-                SAMUEL HP
-                </h1>
+                <img class="title" src="ego.png" style="height:4rem">
             </a>
         </div>
 		<br/>
