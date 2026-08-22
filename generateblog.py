@@ -283,7 +283,7 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
     
     
         <div class="">
-            <a href="./" class="h1link">
+            <a href="../" class="h1link">
                 <img class="title" src="../ego.png" style="height:4rem">
             </a>
           <div class="blog-grid">

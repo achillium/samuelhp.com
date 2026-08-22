@@ -169,7 +169,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
     <body>
         <div class="">
         <div>
-            <a href="./" class="h1link">
+            <a href="../" class="h1link">
                 <img class="title" src="ego.png" style="height:4rem">
             </a>
         </div>
