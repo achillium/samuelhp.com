@@ -24,16 +24,18 @@
     	<link rel="manifest" href="/site.webmanifest">
     </head>
 
-<body class="no-scroll">
+<body>
 	<div class="astronauts">
 	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut"/>
 	</div>
 
     <div class="">
-        <div>
+        <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
+            <a href="./"><img src="arrow.png" style="width:25px; height:25px; border-radius:4px; transform: scaleX(-1);"></a>
             <a href="./" class="h1link">
-                <img class="title" src="ego.png" style="height:4rem">
+                <img class="title" src="ego.png" style="height:4rem; margin-top:0;">
             </a>
+            <a href="./"><img src="arrow.png" style="width:25px; height:25px; border-radius:4px;"></a>
         </div>
 		<div style="display:none;">
 			<h1>
@@ -47,43 +49,49 @@
 			</h1>
 		</div>
 		<br/>
-        <span class="toplinks" style="display: flex; flex-direction: row; justify-content: center;">
+        <span class="toplinks" style="display: flex; flex-direction: row; justify-content: center; gap: 1rem; align-items: center;">
             <a href="https://github.com/sam-astro" target="_blank">
                 <span class="inlinelink">GitHub</span>
-            </a> |
+            </a>
+            <span class="toplink-sep"></span>
             <a href="https://www.youtube.com/@AstroSamDev" target="_blank">
                 <span class="inlinelink">YouTube</span>
-            </a> |
+            </a>
+            <span class="toplink-sep"></span>
             <a href="https://www.youtube.com/@AstroSam2" target="_blank">
                 <span class="inlinelink">Second Channel</span>
-            </a> |
+            </a>
+            <span class="toplink-sep"></span>
             <a href="https://www.instagram.com/samuelhp0/" target="_blank">
                 <span class="inlinelink">Instagram</span>
-            </a> |
+            </a>
+            <span class="toplink-sep"></span>
             <a href="https://www.linkedin.com/in/samuel-parent-b96717272/" target="_blank">
                 <span class="inlinelink">Linkedin</span>
             </a>
         </span>
 
         <div class="pagebody">
-            <div class="linker" style="text-align:center">
+            <div class="linker" style="text-align:left">
 		    	<br/>
 
-		    	<span class="labelheading">CONTACT:</span>
-                <span class="labelheading">BUSINESS:    <span class="email">me[at]samuelhp.com</span></span>
-                <span class="labelheading">CHANNEL:  <span class="email">astrosam.contact[at]gmail.com</span></span>
-
-		    	<br/>
-
-                <div style="text-align:center;">
-                    <img src="mugshot.png" width=256 align="center" style="border: none; border-radius:0.3rem">
+		    	<span class="section-heading">Contact <em class="heading-latin">Nuntium</em></span>
+                <div class="contact-row">
+                    <span class="contact-label">Business</span>
+                    <span class="email">me[at]samuelhp.com</span>
+                </div>
+                <div class="contact-row">
+                    <span class="contact-label">Channel</span>
+                    <span class="email">astrosam.contact[at]gmail.com</span>
                 </div>
 
 		    	<br/>
-                <div class="pyramid">
-                    <span class="labelheading">
-                        -- Offertory --
-                    </span>
+
+                <div style="display: flex; gap: 1.5rem; align-items: flex-start; margin-top: 1rem;">
+                    <img src="mugshot.png" width=256 class="mugshot">
+                    <div style="flex: 1;">
+                        <div class="pyramid">
+                    <span class="section-heading">Offertory <em class="heading-latin">Donum</em></span>
                     <a href="https://ko-fi.com/astrosam" target="_blank">
                         KO-FI ☕
                     </a>
@@ -92,23 +100,21 @@
 		    		</a>
                 </div>
                 <div class="pyramid">
-                    <span class="labelheading">
-                        -- Made These --
-                    </span>
+                    <span class="section-heading">Made These <em class="heading-latin">Confabricata</em></span>
                     <a href="portfolio.html">
                         PORTFOLIO
                     </a>
                 </div>
                 <div class="pyramid">
-                    <span class="labelheading">
-                        -- Content --
-                    </span>
+                    <span class="section-heading">Content <em class="heading-latin">Scripta</em></span>
                     <a href="./b/">
                         BLOG
                     </a>
                     <a href="./data/">
                         DATA 
                     </a>
+                </div>
+                    </div>
                 </div>
             </div>
             <img src="./Astronaut3D/largeanimation.webp" class="logo">

@@ -160,11 +160,13 @@ def convert_markdown_with_css(markdown_file, css_file, output_file):
         </head>
         <body>
             <div class="">
-	            <div>
+	            <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
+                    <a href="./"><img src="../arrow.png" style="width:25px; height:25px; border-radius:4px; transform: scaleX(-1);"></a>
                     <a href="./" class="h1link">
-                        <img class="title" src="../ego.png" style="height:4rem">
+                        <img class="title" src="../ego.png" style="height:4rem; margin-top:0;">
                     </a>
-	            </div>
+                    <a href="./"><img src="../arrow.png" style="width:25px; height:25px; border-radius:4px;"></a>
+                </div>
 			    <br/>
             </div>
 
@@ -283,9 +285,13 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
     
     
         <div class="">
-            <a href="../" class="h1link">
-                <img class="title" src="../ego.png" style="height:4rem">
-            </a>
+            <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
+                <a href="../"><img src="../arrow.png" style="width:25px; height:25px; border-radius:4px; transform: scaleX(-1);"></a>
+                <a href="../" class="h1link">
+                    <img class="title" src="../ego.png" style="height:4rem; margin-top:0;">
+                </a>
+                <a href="../"><img src="../arrow.png" style="width:25px; height:25px; border-radius:4px;"></a>
+            </div>
           <div class="blog-grid">
             {''.join(items)}
           </div>
