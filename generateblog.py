@@ -159,6 +159,7 @@ def convert_markdown_with_css(markdown_file, css_file, output_file):
             <link rel="stylesheet" type="text/css" href="{css_file}">
         </head>
         <body>
+            <canvas id="starfield" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;"></canvas>
             <div class="">
 	            <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
                     <a href="./"><img src="../arrow.png" style="width:25px; height:25px; border-radius:4px; transform: scaleX(-1);"></a>
@@ -196,6 +197,37 @@ def convert_markdown_with_css(markdown_file, css_file, output_file):
         </body>
         </html>
         """
+
+        starfield_script = """
+        <script>
+        const starCanvas = document.getElementById('starfield');
+        const starCtx = starCanvas.getContext('2d');
+        let stars = [];
+        function resizeStarCanvas() { starCanvas.width = window.innerWidth; starCanvas.height = window.innerHeight; }
+        function initStars() {
+            stars = [];
+            const starCount = Math.floor((window.innerWidth * window.innerHeight) / 2500);
+            for (let i = 0; i < starCount; i++) {
+                stars.push({ x: Math.random() * starCanvas.width, y: Math.random() * starCanvas.height, r: Math.random() * 1.4 + 0.3, opacity: Math.random() * 0.5 + 0.3, speed: Math.random() * 0.12 + 0.02, twinkle: Math.random() * Math.PI * 2, twinkleSpeed: Math.random() * 0.015 + 0.003 });
+            }
+        }
+        function animateStars() {
+            starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+            for (let s of stars) {
+                s.y += s.speed; s.twinkle += s.twinkleSpeed;
+                if (s.y > starCanvas.height + 5) { s.y = -5; s.x = Math.random() * starCanvas.width; }
+                const tw = s.opacity * (0.6 + 0.4 * Math.sin(s.twinkle));
+                starCtx.beginPath(); starCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                starCtx.fillStyle = `rgba(255, 255, 255, ${tw})`; starCtx.fill();
+            }
+            requestAnimationFrame(animateStars);
+        }
+        resizeStarCanvas(); initStars(); animateStars();
+        window.addEventListener('resize', () => { resizeStarCanvas(); initStars(); });
+        </script>
+        """
+
+        full_html = full_html.replace("</body>", starfield_script + "\n        </body>")
 
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(full_html)
@@ -278,6 +310,7 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
       </style>
     </head>
     <body style="overflow:auto; min-height:100vh;">
+    <canvas id="starfield" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;"></canvas>
     <div>
     </div>
     
@@ -299,6 +332,35 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
     </body>
     </html>
     '''
+    starfield_script = """
+    <script>
+    const starCanvas = document.getElementById('starfield');
+    const starCtx = starCanvas.getContext('2d');
+    let stars = [];
+    function resizeStarCanvas() { starCanvas.width = window.innerWidth; starCanvas.height = window.innerHeight; }
+    function initStars() {
+        stars = [];
+        const starCount = Math.floor((window.innerWidth * window.innerHeight) / 2500);
+        for (let i = 0; i < starCount; i++) {
+            stars.push({ x: Math.random() * starCanvas.width, y: Math.random() * starCanvas.height, r: Math.random() * 1.4 + 0.3, opacity: Math.random() * 0.5 + 0.3, speed: Math.random() * 0.12 + 0.02, twinkle: Math.random() * Math.PI * 2, twinkleSpeed: Math.random() * 0.015 + 0.003 });
+        }
+    }
+    function animateStars() {
+        starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+        for (let s of stars) {
+            s.y += s.speed; s.twinkle += s.twinkleSpeed;
+            if (s.y > starCanvas.height + 5) { s.y = -5; s.x = Math.random() * starCanvas.width; }
+            const tw = s.opacity * (0.6 + 0.4 * Math.sin(s.twinkle));
+            starCtx.beginPath(); starCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            starCtx.fillStyle = `rgba(255, 255, 255, ${tw})`; starCtx.fill();
+        }
+        requestAnimationFrame(animateStars);
+    }
+    resizeStarCanvas(); initStars(); animateStars();
+    window.addEventListener('resize', () => { resizeStarCanvas(); initStars(); });
+    </script>
+    """
+    html = html.replace("</body>", starfield_script + "\n    </body>")
     print(f"DONE!\n")
     Path(out_path+"/index.html").write_text(html, encoding="utf-8")
     print(f"Blog generated: {out_path}/index.html\n")
