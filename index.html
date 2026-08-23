@@ -118,8 +118,9 @@
                     </div>
                 </div>
             </div>
-            <img src="./Astronaut3D/largeanimation.webp" class="logo">
         </div>
+        <img src="./Astronaut3D/largeanimation.webp" class="logo">
+        <div style="text-align: center; margin-top: 2rem; color: #555; font-size: 1.2rem;">(click the astronaut)</div>
     </div>
 
 	<script>
@@ -305,8 +306,23 @@
 	});
 	</script>
 
+	<script>
+	const logo = document.querySelector('.logo');
+	let logoSide = 'right';
+	let logoTop = -50;
 
-
-
+	function animateLogo() {
+		logoTop += 0.15;
+		if (logoTop > 100) {
+			logoTop = -50;
+			logoSide = logoSide === 'right' ? 'left' : 'right';
+			logo.style.left = logoSide === 'right' ? '75vw' : '5vw';
+		}
+		logo.style.top = logoTop + 'vh';
+		requestAnimationFrame(animateLogo);
+	}
+	logo.style.left = '75vw';
+	animateLogo();
+	</script>
 
 </body></html>

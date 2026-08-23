@@ -175,14 +175,17 @@ a:hover {
 .logo {
     height: 50vh;
 	cursor:pointer;
-    margin-left:auto;
+    position: fixed;
+    top: 0;
+    left: 75vw;
+    z-index: 0;
 }
 
 .pagebody {
     display: flex;
     align-items: flex-start;
-    width: 70vw;
-    gap: 40px;
+    width: auto;
+    margin: 0 auto;
 }
 
 .inlinelink{
@@ -593,7 +596,8 @@ b{
 .linker {
     grid-template-rows: repeat(1, minmax(0, 1fr));
     display: grid;
-    width:80vw;
+    width: 40vw;
+    margin: 0 auto;
 }
 
 .pyramid {
