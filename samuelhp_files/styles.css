@@ -515,7 +515,7 @@ blockquote{
 	left:5px;
 	right:5px;
 	text-align:center;
-	filter: drop-shadow(0 4px 12px rgba(224,164,92,0.4));
+	filter: drop-shadow(0 0 8px rgba(224,164,92,0.5));
 }
 
 .mugshot {
