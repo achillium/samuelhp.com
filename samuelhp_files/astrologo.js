@@ -10,12 +10,18 @@
         if (logoTop > 100) {
             logoTop = -50;
             logoSide = logoSide === 'right' ? 'left' : 'right';
-            logo.style.left = logoSide === 'right' ? '75vw' : '5vw';
+            if (logoSide === 'right') {
+                logo.style.left = '';
+                logo.style.right = '0vw';
+            } else {
+                logo.style.right = '';
+                logo.style.left = '0vw';
+            }
         }
         logo.style.top = logoTop + 'vh';
         requestAnimationFrame(animateLogo);
     }
 
-    logo.style.left = '75vw';
+    logo.style.right = '0vw';
     animateLogo();
 })();

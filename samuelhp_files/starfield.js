@@ -1,7 +1,7 @@
 (function() {
     const canvas = document.createElement('canvas');
     canvas.id = 'starfield';
-    canvas.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;';
+    canvas.style.cssText = 'position: fixed; inset: 0; width: auto; height: auto; z-index: 0; pointer-events: none;';
     document.body.insertBefore(canvas, document.body.firstChild);
 
     const ctx = canvas.getContext('2d');
