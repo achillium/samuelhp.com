@@ -1,66 +1,68 @@
 (function() {
-    const canvas = document.createElement('canvas');
-    canvas.id = 'starfield';
-    canvas.style.cssText = 'position: fixed; inset: 0; width: auto; height: auto; z-index: 0; pointer-events: none;';
-    document.body.insertBefore(canvas, document.body.firstChild);
+    const field = document.createElement('div');
+    field.id = 'starfield';
+    field.className = 'starfield';
+    document.body.insertBefore(field, document.body.firstChild);
 
-    const ctx = canvas.getContext('2d');
-    let stars = [];
+    function createStarImage(seed, count) {
+        let random = seed;
+        const nextRandom = () => {
+            random = (random * 16807) % 2147483647;
+            return (random - 1) / 2147483646;
+        };
 
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-
-    function initStars() {
-        stars = [];
-        const count = Math.floor((window.innerWidth * window.innerHeight) / 5000);
+        let stars = '';
         for (let i = 0; i < count; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 1.4 + 0.3,
-                opacity: Math.random() * 0.5 + 0.3,
-                speed: Math.random() * 0.12 + 0.02,
-                twinkle: Math.random() * Math.PI * 2,
-                twinkleSpeed: Math.random() * 0.015 + 0.003
-            });
+            const x = (nextRandom() * 1000).toFixed(1);
+            const y = (nextRandom() * 1000).toFixed(1);
+            const radius = (nextRandom() * 1.4 + 0.3).toFixed(2);
+            const opacity = (nextRandom() * 0.5 + 0.3).toFixed(2);
+            stars += `<circle cx="${x}" cy="${y}" r="${radius}" opacity="${opacity}"/>`;
         }
+
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice"><rect width="1000" height="1000" fill="transparent"/><g fill="white">${stars}</g></svg>`;
+        return `data:image/svg+xml,${encodeURIComponent(svg)}`;
     }
 
-    let lastFrameTime = 0;
+    [
+        { count: 150, duration: 150 },
+        { count: 110, duration: 105 },
+        { count: 75, duration: 75 }
+    ].forEach((layerConfig, index) => {
+        const layer = document.createElement('div');
+        layer.className = 'star-layer';
+        layer.style.opacity = `${0.65 - index * 0.12}`;
 
-    function animate(timestamp) {
-        if (timestamp - lastFrameTime < 33) {
-            requestAnimationFrame(animate);
-            return;
+        const track = document.createElement('div');
+        track.className = 'star-track';
+        track.style.animationDuration = `${layerConfig.duration}s`;
+        const seed = Math.floor(Math.random() * 2147483646) + 1;
+        const source = createStarImage(seed, layerConfig.count);
+
+        for (let i = 0; i < 2; i++) {
+            const image = document.createElement('img');
+            image.src = source;
+            image.alt = '';
+            track.appendChild(image);
         }
 
-        const elapsed = Math.min(timestamp - lastFrameTime || 33, 100);
-        lastFrameTime = timestamp;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let s of stars) {
-            s.y += s.speed * elapsed / 33;
-            s.twinkle += s.twinkleSpeed;
-            if (s.y > canvas.height + 5) {
-                s.y = -5;
-                s.x = Math.random() * canvas.width;
-            }
-            const tw = s.opacity * (0.6 + 0.4 * Math.sin(s.twinkle));
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${tw})`;
-            ctx.fill();
-        }
-        requestAnimationFrame(animate);
-    }
-
-    resize();
-    initStars();
-    animate();
-
-    window.addEventListener('resize', () => {
-        resize();
-        initStars();
+        layer.appendChild(track);
+        field.appendChild(layer);
     });
+
+    const issSource = new URL('../iss.png', document.currentScript.src).href;
+
+    function launchISS() {
+        const iss = document.createElement('img');
+        iss.className = 'iss-transit';
+        iss.src = issSource;
+        iss.alt = '';
+        iss.style.setProperty('--iss-start-x', `${Math.random() * 90 - 10}vw`);
+        iss.style.setProperty('--iss-end-x', `${Math.random() * 90 + 10}vw`);
+        iss.style.setProperty('--iss-rotation', `${Math.random() * 360}deg`);
+        document.body.appendChild(iss);
+        iss.addEventListener('animationend', () => iss.remove(), { once: true });
+    }
+
+    setInterval(launchISS, 120000);
 })();
