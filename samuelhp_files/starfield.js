@@ -14,7 +14,7 @@
 
     function initStars() {
         stars = [];
-        const count = Math.floor((window.innerWidth * window.innerHeight) / 2500);
+        const count = Math.floor((window.innerWidth * window.innerHeight) / 5000);
         for (let i = 0; i < count; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
@@ -28,10 +28,19 @@
         }
     }
 
-    function animate() {
+    let lastFrameTime = 0;
+
+    function animate(timestamp) {
+        if (timestamp - lastFrameTime < 33) {
+            requestAnimationFrame(animate);
+            return;
+        }
+
+        const elapsed = Math.min(timestamp - lastFrameTime || 33, 100);
+        lastFrameTime = timestamp;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let s of stars) {
-            s.y += s.speed;
+            s.y += s.speed * elapsed / 33;
             s.twinkle += s.twinkleSpeed;
             if (s.y > canvas.height + 5) {
                 s.y = -5;

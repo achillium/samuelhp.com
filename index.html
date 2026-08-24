@@ -234,7 +234,11 @@
 		// Animate frames
 		const frame = Math.floor(((Date.now() + idx * 1000) / 150) % frameCount)
 					+ spinTypeStartIndex[positions[idx].spin];
-		astro.src = `./Astronaut3D/tiny/${frame.toString().padStart(4, '0')}.png`;
+			const frameSrc = `./Astronaut3D/tiny/${frame.toString().padStart(4, '0')}.png`;
+			if (astro.dataset.frame !== frameSrc) {
+				astro.src = frameSrc;
+				astro.dataset.frame = frameSrc;
+			}
 	  });
 
 	  // Check collisions
@@ -246,7 +250,7 @@
 		  }
 		}
 	  }
-	}, 30);
+	}, 50);
 	</script>
 
 	<script src="./samuelhp_files/starfield.js"></script>
