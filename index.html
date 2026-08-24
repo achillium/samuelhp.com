@@ -25,18 +25,17 @@
     </head>
 
 <body class="no-scroll">
-	<canvas id="starfield" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;"></canvas>
 	<div class="astronauts">
 	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut"/>
 	</div>
 
     <div class="">
         <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
-            <a href="./"><img src="arrow.png" style="width:25px; height:25px; border-radius:4px; transform: scaleX(-1);"></a>
+            <a href="./"><img src="arrow-left.png" class="nav-arrow"></a>
             <a href="./" class="h1link">
                 <img class="title" src="ego.png" style="height:4rem; margin-top:0;">
             </a>
-            <a href="./"><img src="arrow.png" style="width:25px; height:25px; border-radius:4px;"></a>
+            <a href="./"><img src="arrow-right.png" class="nav-arrow"></a>
         </div>
 		<div style="display:none;">
 			<h1>
@@ -50,25 +49,25 @@
 			</h1>
 		</div>
 		<br/>
-        <span class="toplinks" style="display: flex; flex-direction: row; justify-content: center; gap: 1rem; align-items: center;">
+        <span class="toplinks" style="display: flex; flex-direction: row; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap;">
             <a href="https://github.com/sam-astro" target="_blank">
-                <span class="inlinelink">GitHub</span>
+                <span class="inlinelink"><img src="icons/github.png" class="link-icon">GitHub</span>
             </a>
             <span class="toplink-sep"></span>
             <a href="https://www.youtube.com/@AstroSamDev" target="_blank">
-                <span class="inlinelink">YouTube</span>
+                <span class="inlinelink"><img src="icons/youtube.png" class="link-icon">YouTube</span>
             </a>
             <span class="toplink-sep"></span>
             <a href="https://www.youtube.com/@AstroSam2" target="_blank">
-                <span class="inlinelink">Second Channel</span>
+                <span class="inlinelink"><img src="icons/youtube.png" class="link-icon">Second Channel</span>
             </a>
             <span class="toplink-sep"></span>
             <a href="https://www.instagram.com/samuelhp0/" target="_blank">
-                <span class="inlinelink">Instagram</span>
+                <span class="inlinelink"><img src="icons/instagram.png" class="link-icon">Instagram</span>
             </a>
             <span class="toplink-sep"></span>
             <a href="https://www.linkedin.com/in/samuel-parent-b96717272/" target="_blank">
-                <span class="inlinelink">Linkedin</span>
+                <span class="inlinelink"><img src="icons/linkedin.png" class="link-icon">Linkedin</span>
             </a>
         </span>
 
@@ -79,11 +78,11 @@
 		    	<span class="section-heading">Contact <em class="heading-latin">Nuntium</em></span>
                 <div class="contact-row">
                     <span class="contact-label">Business</span>
-                    <span class="email">me[at]samuelhp.com</span>
+                    <span class="email">me<span class="at">[at]</span>samuelhp.com</span>
                 </div>
                 <div class="contact-row">
                     <span class="contact-label">Channel</span>
-                    <span class="email">astrosam.contact[at]gmail.com</span>
+                    <span class="email">astrosam.contact<span class="at">[at]</span>gmail.com</span>
                 </div>
 
 		    	<br/>
@@ -94,25 +93,25 @@
                         <div class="pyramid">
                     <span class="section-heading">Made These <em class="heading-latin">Confabricata</em></span>
                     <a href="portfolio.html">
-                        Portfolio
+                        <img src="icons/code.png" class="link-icon">Portfolio
                     </a>
                 </div>
                 <div class="pyramid">
                     <span class="section-heading">Content <em class="heading-latin">Scripta</em></span>
                     <a href="./b/">
-                        Blog
+                        <img src="icons/write.png" class="link-icon">Blog
                     </a>
                     <a href="./data/">
-                        Data
+                        <img src="icons/tomato.png" class="link-icon">Data
                     </a>
                 </div>
                 <div class="pyramid">
                     <span class="section-heading">Offertory <em class="heading-latin">Donum</em></span>
                     <a href="https://ko-fi.com/astrosam" target="_blank">
-                        Buy me a coffee
+                        <img src="icons/coffee.png" class="link-icon">Buy me a coffee
                     </a>
 		    		<a href="https://www.patreon.com/AstroSam" target="_blank">
-		    			Patreon
+		    			<img src="icons/patreon.png" class="link-icon">Patreon
 		    		</a>
                 </div>
                     </div>
@@ -252,77 +251,7 @@
 	}, 30);
 	</script>
 
-	<script>
-	const starCanvas = document.getElementById('starfield');
-	const starCtx = starCanvas.getContext('2d');
-	let stars = [];
-
-	function resizeStarCanvas() {
-		starCanvas.width = window.innerWidth;
-		starCanvas.height = window.innerHeight;
-	}
-
-	function initStars() {
-		stars = [];
-		const starCount = Math.floor((window.innerWidth * window.innerHeight) / 2500);
-		for (let i = 0; i < starCount; i++) {
-			stars.push({
-				x: Math.random() * starCanvas.width,
-				y: Math.random() * starCanvas.height,
-				r: Math.random() * 1.4 + 0.3,
-				opacity: Math.random() * 0.5 + 0.3,
-				speed: Math.random() * 0.12 + 0.02,
-				twinkle: Math.random() * Math.PI * 2,
-				twinkleSpeed: Math.random() * 0.015 + 0.003
-			});
-		}
-	}
-
-	function animateStars() {
-		starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-		for (let s of stars) {
-			s.y += s.speed;
-			s.twinkle += s.twinkleSpeed;
-			if (s.y > starCanvas.height + 5) {
-				s.y = -5;
-				s.x = Math.random() * starCanvas.width;
-			}
-			const tw = s.opacity * (0.6 + 0.4 * Math.sin(s.twinkle));
-			starCtx.beginPath();
-			starCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-			starCtx.fillStyle = `rgba(255, 255, 255, ${tw})`;
-			starCtx.fill();
-		}
-		requestAnimationFrame(animateStars);
-	}
-
-	resizeStarCanvas();
-	initStars();
-	animateStars();
-
-	window.addEventListener('resize', () => {
-		resizeStarCanvas();
-		initStars();
-	});
-	</script>
-
-	<script>
-	const logo = document.querySelector('.logo');
-	let logoSide = 'right';
-	let logoTop = -50;
-
-	function animateLogo() {
-		logoTop += 0.15;
-		if (logoTop > 100) {
-			logoTop = -50;
-			logoSide = logoSide === 'right' ? 'left' : 'right';
-			logo.style.left = logoSide === 'right' ? '75vw' : '5vw';
-		}
-		logo.style.top = logoTop + 'vh';
-		requestAnimationFrame(animateLogo);
-	}
-	logo.style.left = '75vw';
-	animateLogo();
-	</script>
+	<script src="./samuelhp_files/starfield.js"></script>
+	<script src="./samuelhp_files/astrologo.js"></script>
 
 </body></html>
