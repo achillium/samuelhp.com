@@ -142,7 +142,7 @@ img {
     font-style: italic;
     text-transform: none;
     letter-spacing: 0.05em;
-    color: #888;
+    color: #bbb;
     font-size: 0.85em;
     font-weight: normal;
 }
@@ -175,12 +175,16 @@ img {
 }
 
 .toplink-sep {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #888;
+    width: auto;
+    height: auto;
+    color: #bbb;
+    font-weight: bold;
     opacity: 0.6;
     flex-shrink: 0;
+}
+
+.toplink-sep::before {
+    content: "/";
 }
 
 .email {
