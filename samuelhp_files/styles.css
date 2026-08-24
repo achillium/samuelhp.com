@@ -676,7 +676,7 @@ b{
 .linker {
     grid-template-rows: repeat(1, minmax(0, 1fr));
     display: grid;
-    width: min(100%, 875px);
+    width: min(100%, 750px);
     margin: 0 auto;
     max-width: 100%;
     min-width: 0;
