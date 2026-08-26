@@ -668,11 +668,9 @@ blockquote{
 	height: 1.5em;
 	vertical-align: middle;
 	margin-right: 0.3em;
-	filter: sepia(1) saturate(8) hue-rotate(350deg) brightness(0.85);
 }
 
 a:hover .link-icon {
-	filter: sepia(1) saturate(8) hue-rotate(350deg) brightness(1);
 }
 
 .codehilite{
