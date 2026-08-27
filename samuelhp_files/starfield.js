@@ -64,5 +64,25 @@
         iss.addEventListener('animationend', () => iss.remove(), { once: true });
     }
 
-    setInterval(launchISS, 120000);
+    let issTimer;
+
+    function scheduleISS() {
+        clearTimeout(issTimer);
+        issTimer = setTimeout(() => {
+            if (document.visibilityState === 'visible') {
+                launchISS();
+            }
+            scheduleISS();
+        }, 120000);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            clearTimeout(issTimer);
+        } else {
+            scheduleISS();
+        }
+    });
+
+    scheduleISS();
 })();
