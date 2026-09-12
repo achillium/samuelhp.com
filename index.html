@@ -26,7 +26,7 @@
 
 <body class="no-scroll main-page">
 	<div class="astronauts">
-	  <img src="./Astronaut3D/tiny/0001.png" style="top:0%; left:-200px;" class="astronaut"/>
+	  <img src="./Astronaut3D/tiny/astro-c-spin.webp" style="top:0%; left:-200px;" class="astronaut"/>
 	</div>
 
     <div class="">
@@ -121,12 +121,11 @@
     </div>
 
 	<script>
-	const frameCount = 8;
 	const astroSize = 0.04 * window.innerWidth;
+	const spinSources = ["./Astronaut3D/tiny/astro-c-spin.webp", "./Astronaut3D/tiny/astro-t-spin.webp"];
 
 	const astronautEls = Array.from(document.querySelectorAll(".astronaut"));
 	const positions = [];
-	const spinTypeStartIndex = [5, 14];
 
 	// Initialize existing astronauts
 	astronautEls.forEach((astro, idx) => initAstronaut(astro, idx));
@@ -146,6 +145,7 @@
 		dy: (Math.random() - 0.5) * 0.5,
 		spin: Math.floor(Math.random() * 2)
 	  };
+	  astro.src = spinSources[positions[idx].spin];
 	}
 
 	function checkCollision(i, j) {
@@ -199,7 +199,6 @@
 	function spawnAstronaut() {
 	  const container = document.querySelector(".astronauts");
 	  const astro = document.createElement("img");
-	  astro.src = "./Astronaut3D/tiny/0001.png";
 	  astro.style.top = `-200px`;
 	  astro.style.left = `-200px`;
 	  astro.classList.add("astronaut");
@@ -230,15 +229,6 @@
 
 		astro.style.top = `${top}px`;
 		astro.style.left = `${left}px`;
-
-		// Animate frames
-		const frame = Math.floor(((Date.now() + idx * 1000) / 150) % frameCount)
-					+ spinTypeStartIndex[positions[idx].spin];
-			const frameSrc = `./Astronaut3D/tiny/${frame.toString().padStart(4, '0')}.png`;
-			if (astro.dataset.frame !== frameSrc) {
-				astro.src = frameSrc;
-				astro.dataset.frame = frameSrc;
-			}
 	  });
 
 	  // Check collisions
