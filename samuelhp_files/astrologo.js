@@ -31,5 +31,6 @@
     }
 
     logo.style.right = '0vw';
+    logo.style.visibility = 'visible';
     animateLogo();
 })();

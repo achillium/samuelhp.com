@@ -159,6 +159,7 @@ def convert_markdown_with_css(markdown_file, css_file, output_file):
             <link rel="stylesheet" type="text/css" href="{css_file}">
         </head>
         <body>
+            <script>window.addEventListener('load', () => document.body.classList.add('loaded'))</script>
             <div class="">
 	            <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
                     <a href="./"><img src="../arrow-left.png" class="nav-arrow"></a>
@@ -212,7 +213,7 @@ def convert_pages_to_html(source_path="./b_md", out_path="./b"):
 
 def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./b_md", out_path="./b/"):
     posts = []
-    for file in os.listdir(source_path):
+    for file in sorted(os.listdir(source_path), reverse=True):
         if file.endswith(".md"):
             with open(os.path.join(source_path, file)) as f:
                 posts.append((str(file),f.read()))
@@ -227,9 +228,6 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
         else:
             name = match.group(1).strip()
         thumb_url = get_readme_image_url(post)
-        if not thumb_url:
-            thumb_url = "../placeholder.jpg"
-            print(f"\t ! No thumbnail found for {filename}")
 
         # Read the HTML file for clean description text
         html_filename = filename.replace(".md", ".html")
@@ -242,12 +240,12 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
             # Fallback to old method if HTML doesn't exist yet
             post_str = convert_post_to_string(post)[:256]
 
+        thumbnail_html = f'<div class="blog-thumb"><img src="{thumb_url}" alt="{name} thumbnail"/></div>' if thumb_url else ''
+
         block = f'''
         <div class="blog-item">
           <a href="{html_filename}" class="blog-container">
-            <div class="blog-thumb">
-              <img src="{thumb_url}" alt="{name} thumbnail"/>
-            </div>
+            {thumbnail_html}
             <div class="blog-synopsis">
                 <div class="blog-title">{name}</div>
                 <div class="blog-description">{post_str}</div>
@@ -279,6 +277,7 @@ def generate_blog_home(style_path="./samuelhp_files/styles.css", source_path="./
       </style>
     </head>
     <body style="overflow:auto; min-height:100vh;">
+    <script>window.addEventListener('load', () => document.body.classList.add('loaded'))</script>
     <div>
     </div>
     

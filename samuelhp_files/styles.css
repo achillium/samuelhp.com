@@ -42,6 +42,19 @@ body.no-scroll {
     overflow: hidden;
 }
 
+body:not(.loaded) > *:not(.starfield):not(.iss-transit) {
+    opacity: 0;
+}
+
+body.loaded > *:not(.starfield) {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .main-page, .main-page a, .main-page span, .main-page div, .main-page em {
     text-shadow: 0 6px 24px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,1), 0 2px 5px rgba(0,0,0,1);
 }
@@ -255,8 +268,9 @@ img {
     border-radius: 6px;
     padding: 2px 0.8em;
     background: rgba(255,255,255,0.05);
-    filter: drop-shadow(0 4px 12px rgba(255,255,255,0.3));
     overflow-wrap: anywhere;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .email .at {
@@ -288,6 +302,7 @@ a:hover {
     position: fixed;
     top: 0;
     z-index: -1;
+    visibility: hidden;
 }
 
 .pagebody {
@@ -360,15 +375,15 @@ body::before {
 }
 
 .portfolio-item {
-//  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-//  border-radius: 14px;
-//  border: 2px solid dimgray;
-//  padding: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  border: 2px solid dimgray;
+  padding: 18px;
   background: #111;
-//  display: flex;
-//  flex-direction: column;
-//  align-items: center;
-//  transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s;
 }
 .portfolio-item:hover {
   box-shadow: 0 4px 20px rgba(0,0,0,0.18);
@@ -382,15 +397,21 @@ body::before {
 }
 .portfolio-title {
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1.8em;
   margin-bottom: 6px;
   text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+  font-family: AppleGaramond, arial, sans-serif;
+  color: white;
 }
 .portfolio-desc {
   color: #555;
   font-size: 0.97em;
   margin-bottom: 12px;
   text-align: center;
+  color: #bbb;
+  font-family: AppleGaramond, arial, sans-serif;
 }
 .portfolio-stars {
   color: #FDB23D;
@@ -636,7 +657,7 @@ blockquote{
 	left:5px;
 	right:5px;
 	text-align:center;
-	filter: drop-shadow(0 0 8px rgba(224,164,92,0.5));
+	//filter: drop-shadow(0 0 8px rgba(224,164,92,0.5));
 }
 
 .mugshot {

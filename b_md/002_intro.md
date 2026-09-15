@@ -1,3 +1,5 @@
+<title>My Introduction</title>
+
 Hello, I am Sam, 20 years old from the US. I am studying mathematics+computer science as a rising junior undergraduate. Although I am actually taking the next year off, and am still in the planning phase of what I will do for the next 13 or so months. 
 
 For the past two weeks I have been doing a "dopamine fast", or whatever you want to call it, so that I can finally stop using social media and watching youtube for 5+ hours per day, as well as cutting back on other fast-dopamine things that are bad for me. I also wish to stop offloading tasks from my brain as much as I do, such as with using LLMs or search engines.

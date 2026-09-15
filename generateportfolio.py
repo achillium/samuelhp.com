@@ -2,8 +2,13 @@ import requests
 import re
 from pathlib import Path
 import sys
+import os
+import io
+from PIL import Image
 
 GITHUB_API = "https://api.github.com"
+PORTFOLIO_IMG_DIR = "./images/portfolio"
+MAX_IMG_SIZE = 300
 
 def get_repositories(username, token):
     repos_url = f"{GITHUB_API}/users/{username}/repos?per_page=100"
@@ -20,6 +25,46 @@ def get_repositories(username, token):
         # Pagination
         repos_url = r.links.get('next', {}).get('url')
     return repos
+
+def download_and_resize_image(url, output_dir, name):
+    """Download an image from a URL, resize to fit within MAX_IMG_SIZE, and save locally."""
+    try:
+        r = requests.get(url, timeout=15)
+        if r.status_code != 200:
+            print(f"  Failed to download image for {name}: HTTP {r.status_code}")
+            return None
+        img = Image.open(io.BytesIO(r.content))
+        is_animated = getattr(img, "is_animated", False)
+        if is_animated:
+            frames = []
+            durations = []
+            for frame_idx in range(img.n_frames):
+                img.seek(frame_idx)
+                frame = img.copy().convert("RGBA")
+                frame.thumbnail((MAX_IMG_SIZE, MAX_IMG_SIZE), Image.LANCZOS)
+                frames.append(frame)
+                durations.append(img.info.get("duration", 100))
+            max_w = max(f.size[0] for f in frames)
+            max_h = max(f.size[1] for f in frames)
+            normalized = []
+            for frame in frames:
+                canvas = Image.new("RGBA", (max_w, max_h), (0, 0, 0, 0))
+                canvas.paste(frame, ((max_w - frame.size[0]) // 2, (max_h - frame.size[1]) // 2))
+                normalized.append(canvas.convert("P", palette=Image.ADAPTIVE, colors=256))
+            out_path = os.path.join(output_dir, f"{name}.gif")
+            normalized[0].save(out_path, "GIF", save_all=True, append_images=normalized[1:],
+                               duration=durations, loop=0, disposal=0)
+            print(f"  Saved (animated): {out_path} ({max_w}x{max_h}, {len(normalized)} frames)")
+        else:
+            img.thumbnail((MAX_IMG_SIZE, MAX_IMG_SIZE), Image.LANCZOS)
+            out_path = os.path.join(output_dir, f"{name}.webp")
+            img.save(out_path, "WEBP", quality=85)
+            print(f"  Saved: {out_path} ({img.size[0]}x{img.size[1]})")
+        return out_path
+    except Exception as e:
+        print(f"  Error processing image for {name}: {e}")
+        return None
+
 
 def get_readme_image_url(owner, token, repo, branch="main"):
     """Fetch README raw content and extract first image URL, resolving relative and absolute paths."""
@@ -93,6 +138,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
     allRepos.sort(key=lambda r: r.get('stargazers_count', 0) + (starsOffset[r["name"]] if r["name"] in starsOffset else 0), reverse=True)
 
     items = []
+    os.makedirs(PORTFOLIO_IMG_DIR, exist_ok=True)
     for repo in allRepos:
         username = repo["username"]
         name = repo['name']
@@ -100,30 +146,27 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
         stars = repo.get('stargazers_count', 0)
         html_url = repo['html_url']
         thumb_url = get_readme_image_url(username, token, name)
-        if not thumb_url:
-            thumbnail_image = ""
+        if thumb_url:
+            local_path = download_and_resize_image(thumb_url, PORTFOLIO_IMG_DIR, name)
         else:
+            local_path = None
+        if local_path:
             thumbnail_image = f'''
                 <div class="portfolio-thumb">
-                  <img src="{thumb_url}" alt="{name} thumbnail"/>
+                  <img src="{local_path}" alt="{name} thumbnail"/>
                 </div>
             '''
+        else:
+            thumbnail_image = ""
         if not desc:
             continue
         if name in hiddenRepos:
             continue
         block = f'''
-        <div class="window portfolio-item">
+        <div class="portfolio-item">
           <a href="{html_url}" target="_blank">
-            <div class="title-bar">
-                <div class="title-bar-text">{name}</div>
-                <div class="title-bar-controls">
-                    <button aria-label="Minimize"></button>
-                    <button aria-label="Maximize"></button>
-                    <button aria-label="Close"></button>
-                </div>
-            </div>
-            <div class="window-body">
+            <h2 class="portfolio-title">{name}</h2>
+            <div class="portfolio-desc">
                 {thumbnail_image}
                 <div>{desc if desc else '<i>No description</i>'}</div>
                 <div class="portfolio-stars">★ {stars}</div>
@@ -137,7 +180,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
     <html lang="en">
     <head>
 
-        <link rel="stylesheet" href="https://unpkg.com/98.css" />
+        <!-- <link rel="stylesheet" href="https://unpkg.com/98.css" /> -->
 
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XZ1MVQZY32"></script>
@@ -167,6 +210,7 @@ def generate_portfolio(username, args, style_path="./samuelhp_files/styles.css",
       </style>
     </head>
     <body>
+        <script>window.addEventListener('load', () => document.body.classList.add('loaded'))</script>
         <div class="">
         <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem;">
             <a href="./"><img src="arrow-left.png" class="nav-arrow"></a>
