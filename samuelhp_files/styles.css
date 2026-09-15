@@ -42,11 +42,11 @@ body.no-scroll {
     overflow: hidden;
 }
 
-body:not(.loaded) > *:not(.starfield):not(.iss-transit) {
+body:not(.loaded) > *:not(.starfield):not(.iss-transit):not(script) {
     opacity: 0;
 }
 
-body.loaded > *:not(.starfield) {
+body.loaded > *:not(.starfield):not(.iss-transit):not(script) {
     animation: fadeIn 0.3s ease-out forwards;
 }
 
@@ -269,8 +269,6 @@ img {
     padding: 2px 0.8em;
     background: rgba(255,255,255,0.05);
     overflow-wrap: anywhere;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
 }
 
 .email .at {
